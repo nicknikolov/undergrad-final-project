@@ -1,6 +1,6 @@
 # Proposal (2.0)
 **Nikolay Nikolov**, Goldsmiths, BSc Creative Computing  
-**Dr. Rebecca Friebrink**, Supervisor
+**Dr. Rebecca Fiebrink**, Supervisor
 
 #### Title
 Usable Machine Learning / Personalized Smartphone Gesture Recognizer
