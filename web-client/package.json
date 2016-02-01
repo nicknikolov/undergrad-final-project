@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "budo index.js:bundle.js --live",
+    "start": "budo index.js:bundle.js --live --open",
     "build": "browserify index.js | uglifyjs -m -c warnings=false > bundle.js"
   },
   "author": "",
