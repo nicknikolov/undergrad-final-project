@@ -1,6 +1,6 @@
 var io = require('socket.io-client')
 var socket = io('http://localhost:3000')
-var inputsNumber = 20
+var inputsNumber = 40
 
 socket.on('connect', function() {
 
