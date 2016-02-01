@@ -2,6 +2,9 @@ var io = require('socket.io-client')
 var socket = io('http://localhost:3000')
 var inputsNumber = 40
 
+// Mouse x, y coordinates over web sockets on mouse drag
+// Inputs number is what Wekinator (or your ML algorithms) expects
+
 socket.on('connect', function() {
 
   var isMouseDown = false
@@ -19,11 +22,15 @@ socket.on('connect', function() {
     var inputsArray = []
 
     // TODO: how do I deal with short gestures?
+    // Ignore for now, later maybe interpolation
     if ((rawData.length * 2) < inputsNumber) {
       rawData = []
       return
     }
 
+    // Downsample by sampling every N sample using the downsampleFactor variable
+    // Move to the origin (first coordinate user clicked on)
+    // Normalize to -1 1 range
     var downsampleFactor = (rawData.length*2) / inputsNumber
     var sampleIndex = 0
 
