@@ -1,5 +1,4 @@
 var io = require('socket.io')()
-
 var osc = require('osc-min')
 var dgram = require('dgram')
 
@@ -8,6 +7,7 @@ var remotePort = 6448
 
 var udpServer = dgram.createSocket('udp4')
 
+// Get xy coordinates from browser, create an OSC message and send to Wekinator
 io.on('connection', (socket) => {
   console.log('user connected')
 
