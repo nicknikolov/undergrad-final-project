@@ -6,8 +6,14 @@ socket.on('connect', function() {
 
   var isMouseDown = false
   var rawData = []
+  var originX, originY
 
-  document.onmousedown = function() { isMouseDown = true  }
+  document.onmousedown = function(e) {
+    isMouseDown = true
+    originX = e.clientX
+    originY = e.clientY
+  }
+
   document.onmouseup   = function() {
     isMouseDown = false
     var inputsArray = []
@@ -18,18 +24,20 @@ socket.on('connect', function() {
       return
     }
 
-    var downsampleFactor = Math.round((rawData.length*2) / inputsNumber)
+    var downsampleFactor = (rawData.length*2) / inputsNumber
+    var sampleIndex = 0
 
     for (var i=0; i<inputsNumber/2; i++) {
-      inputsArray.push((rawData[i * downsampleFactor].x) / window.innerWidth,
-                       (rawData[i * downsampleFactor].y) / window.innerHeight)
+      var x = (rawData[Math.round(sampleIndex)].x - originX) / window.innerWidth
+      var y = (rawData[Math.round(sampleIndex)].y - originY) / window.innerHeight
+      inputsArray.push(x, y)
+      sampleIndex += downsampleFactor
     }
 
-    console.log('raw length: ' + rawData.length)
-    console.log('res: ' + inputsArray)
-    console.log('res length: ' + inputsArray.length)
     socket.emit('browser', inputsArray)
     rawData = []
+    originX = 0
+    originY = 0
   }
   document.onmousemove = function(e) {
     if(isMouseDown) {
