@@ -1,0 +1,347 @@
+var d3 = require('d3')
+var ReactFauxDOM = require('react-faux-dom')
+var React = require('react')
+var ReactDOM = require('react-dom')
+var ReactTabs = require('react-tabs')
+var Tab = ReactTabs.Tab
+var Tabs = ReactTabs.Tabs
+var TabList = ReactTabs.TabList
+var TabPanel = ReactTabs.TabPanel
+var io = require('socket.io-client')
+// var socket = io('http://192.168.0.5:3000')
+// var socket = io('http://10.100.131.82:3000')
+// var socket = io('http://172.16.42.86:3000/')
+
+var App = React.createClass({
+  getInitialState: function () {
+    return {
+      acceleration: {x: 0, y: 0, z: 0},
+      rawData: [],
+      touchEvent: false,
+      data: [this.props.data, this.props.data, this.props.data]
+    }
+  },
+
+  componentWillMount: function () {
+    if (window && window.DeviceMotionEvent) {
+      this.motionListener = this.handleMotionChange
+      window.addEventListener('devicemotion', this.motionListener, false)
+    }
+  },
+
+  componentWillUnmount: function () {
+    if (window) {
+      window.removeEventListener('devicemotion', this.motionListener, false)
+    }
+  },
+
+  handleMotionChange: function (event) {
+    if (!this.state.touchEvent) return
+
+    var acceleration = {
+      x: event.acceleration.x,
+      y: event.acceleration.y,
+      z: event.acceleration.z
+    }
+
+    this.setState({
+      acceleration: acceleration
+    })
+
+    var rawData = this.state.rawData
+    rawData.push(acceleration)
+
+    if (this.state.touchEvent) {
+      this.setState({
+        rawData: rawData
+      })
+    }
+  },
+
+  handleTouchStart: function () {
+    this.setState({
+      touchEvent: true
+    })
+  },
+
+  handleTouchEnd: function () {
+    this.setState({
+      touchEvent: false
+    })
+
+    var inputsNumber = 60
+    var inputsArray = []
+
+    var rawData = this.state.rawData
+
+    // TODO: how do I deal with short gestures?
+    // Ignore for now, later maybe interpolation
+    if ((rawData.length * 3) < inputsNumber) {
+      this.setState({
+        rawData: []
+      })
+      return
+    }
+
+    // Downsample by sampling every N sample using the downsampleFactor variable
+    var downsampleFactor = (rawData.length * 3) / inputsNumber
+    var sampleIndex = 0
+    var xArray = []
+    var yArray = []
+    var zArray = []
+
+    for (var i = 0; i < inputsNumber / 3; i++) {
+      var x = rawData[Math.round(sampleIndex)].x
+      var y = rawData[Math.round(sampleIndex)].y
+      var z = rawData[Math.round(sampleIndex)].z
+      inputsArray.push(x, y, z)
+      xArray.push(x)
+      yArray.push(y)
+      zArray.push(z)
+      sampleIndex += downsampleFactor
+    }
+
+    this.setState({
+      data: [xArray, yArray, zArray],
+      rawData: []
+    })
+
+    // updateX(xArray)
+    // updateY(yArray)
+    // updateZ(zArray)
+
+    // socket.emit('browser', inputsArray)
+    // rawData = []
+  },
+
+  render: function () {
+    var m = [10, 10, 25, 45] // margins
+    var w = 300 - m[1] - m[3] // width
+    var h = 200 - m[0] - m[2] // height
+    var data = this.state.data
+
+    var x = d3.scale.linear().domain([0, data[0].length]).range([0, w])
+    var y = d3.scale.linear().domain([-7, 7]).range([h, 0])
+
+    var xAxis = d3.svg.axis()
+      .scale(x)
+      .orient('bottom')
+      .ticks(5)
+
+    var yAxisLeft = d3.svg.axis()
+      .scale(y)
+      .ticks(4)
+      .orient('left')
+
+    var line = d3.svg.line()
+      .x(function (d, i) { return x(i) })
+      .y(function (d) { return y(d) })
+
+    var nodeX = ReactFauxDOM.createElement('svg')
+    var nodeY = ReactFauxDOM.createElement('svg')
+    var nodeZ = ReactFauxDOM.createElement('svg')
+    var nodes = []
+    nodes.push(nodeX, nodeY, nodeZ)
+
+    for (var i = 0; i < 3; i++) {
+      var svg = d3.select(nodes[i])
+        .attr('width', w + m[1] + m[3])
+        .attr('height', h + m[0] + m[2])
+        .append('g')
+        .attr('transform', 'translate(' + m[3] + ',' + m[0] + ')')
+
+      svg.append('g')
+        .attr('class', 'x axis')
+        .attr('transform', 'translate(0,' + h + ')')
+        .call(xAxis)
+
+      svg.append('g')
+        .attr('class', 'y axis')
+        .attr('transform', 'translate(-25,0)')
+        .call(yAxisLeft)
+
+      svg.append('path').attr('d', line(data[i]))
+    }
+
+
+    var motionDataDiv = 'haha'
+
+    return (
+      <Tabs>
+        <TabList>
+          <Tab>Graphs</Tab>
+          <Tab>Record</Tab>
+        </TabList>
+
+        <TabPanel>
+          <div> { nodes[0].toReact() } </div>
+          <div> { nodes[1].toReact() } </div>
+          <div> { nodes[2].toReact() } </div>
+        </TabPanel>
+        <TabPanel>
+          <div className='button' onTouchStart={this.handleTouchStart} onTouchEnd={this.handleTouchEnd} >Record gesture</div>
+          {this.state.touchEvent ? <div> {this.state.acceleration.x} </div> : null}
+          {this.state.touchEvent ? <div> {this.state.acceleration.y} </div> : null}
+          {this.state.touchEvent ? <div> {this.state.acceleration.z} </div> : null}
+        </TabPanel>
+
+      </Tabs>
+    )
+  }
+})
+
+var data = [-2, -1, 0, 0, 0, 1, 2, 3, 2, 1, -1, -2, -1, 0, 1, 1, 1, 2, 3, 4]
+ReactDOM.render(<App data = {data} />, document.querySelector('#content'))
+
+// var inputsNumber = 60
+
+// var m = [30, 30, 30, 60] // margins
+// var w = 400 - m[1] - m[3] // width
+// var h = 200 - m[0] - m[2] // height
+
+// var data = []
+// var x = d3.scale.linear().domain([0, data.length]).range([0, w])
+// var y = d3.scale.linear().domain([-7, 7]).range([h, 0])
+// var line = d3.svg.line()
+//   .x(function (d, i) {
+//     return x(i)
+//   })
+//   .y(function (d) {
+//     return y(d)
+//   })
+
+// var graphX = d3.select('#graphX').append('svg:svg')
+//   .attr('width', w + m[1] + m[3])
+//   .attr('height', h + m[0] + m[2])
+//   .append('svg:g')
+//   .attr('transform', 'translate(' + m[3] + ',' + m[0] + ')')
+
+// var graphY = d3.select('#graphY').append('svg:svg')
+//   .attr('width', w + m[1] + m[3])
+//   .attr('height', h + m[0] + m[2])
+//   .append('svg:g')
+//   .attr('transform', 'translate(' + m[3] + ',' + m[0] + ')')
+
+// var graphZ = d3.select('#graphY').append('svg:svg')
+//   .attr('width', w + m[1] + m[3])
+//   .attr('height', h + m[0] + m[2])
+//   .append('svg:g')
+//   .attr('transform', 'translate(' + m[3] + ',' + m[0] + ')')
+
+// var xAxis = d3.svg.axis()
+//   .scale(x)
+//   .orient('bottom')
+//   .ticks(5)
+
+// graphX.append('svg:g')
+//   .attr('class', 'x axis')
+//   .attr('transform', 'translate(0,' + h + ')')
+//   .call(xAxis)
+
+// graphY.append('svg:g')
+//   .attr('class', 'x axis')
+//   .attr('transform', 'translate(0,' + h + ')')
+//   .call(xAxis)
+
+// graphZ.append('svg:g')
+//   .attr('class', 'x axis')
+//   .attr('transform', 'translate(0,' + h + ')')
+//   .call(xAxis)
+
+// var yAxisLeft = d3.svg.axis().scale(y).ticks(4).orient('left')
+
+// graphX.append('svg:g')
+//   .attr('class', 'y axis')
+//   .attr('transform', 'translate(-25,0)')
+//   .call(yAxisLeft)
+
+// graphY.append('svg:g')
+//   .attr('class', 'y axis')
+//   .attr('transform', 'translate(-25,0)')
+//   .call(yAxisLeft)
+
+// graphZ.append('svg:g')
+//   .attr('class', 'y axis')
+//   .attr('transform', 'translate(-25,0)')
+//   .call(yAxisLeft)
+
+// graphX.append('svg:path').attr('d', line(data))
+// graphY.append('svg:path').attr('d', line(data))
+// graphZ.append('svg:path').attr('d', line(data))
+
+// function updateX (data) {
+//   x.domain([0, data.length]).range([0, w])
+//   y.domain([-7, 7]).range([h, 0])
+
+//   graphX.append('svg:path').attr('d', line(data))
+// }
+
+// function updateY (data) {
+//   x.domain([0, data.length]).range([0, w])
+//   y.domain([-7, 7]).range([h, 0])
+
+//   graphY.append('svg:path').attr('d', line(data))
+// }
+
+// function updateZ (data) {
+//   x.domain([0, data.length]).range([0, w])
+//   y.domain([-7, 7]).range([h, 0])
+
+//   graphZ.append('svg:path').attr('d', line(data))
+// }
+
+// socket.on('connect', function () {
+//   var touchEvent = false
+//   var rawData = []
+//   document.body.style.background = 'white'
+
+//   document.ontouchstart = function (e) {
+//     touchEvent = true
+//     document.body.style.background = 'red'
+//   }
+
+//   document.ontouchend = function () {
+//     document.body.style.background = 'white'
+//     touchEvent = false
+//     var inputsArray = []
+
+//     // TODO: how do I deal with short gestures?
+//     // Ignore for now, later maybe interpolation
+//     if ((rawData.length * 3) < inputsNumber) {
+//       rawData = []
+//       return
+//     }
+
+//     // Downsample by sampling every N sample using the downsampleFactor variable
+//     var downsampleFactor = (rawData.length * 3) / inputsNumber
+//     var sampleIndex = 0
+//     var xArray = []
+//     var yArray = []
+//     var zArray = []
+
+//     for (var i = 0; i < inputsNumber / 3; i++) {
+//       var x = rawData[Math.round(sampleIndex)].x
+//       var y = rawData[Math.round(sampleIndex)].y
+//       var z = rawData[Math.round(sampleIndex)].z
+//       inputsArray.push(x, y, z)
+//       xArray.push(x)
+//       yArray.push(y)
+//       zArray.push(z)
+//       sampleIndex += downsampleFactor
+//     }
+
+//     updateX(xArray)
+//     updateY(yArray)
+//     updateZ(zArray)
+
+//     socket.emit('browser', inputsArray)
+//     rawData = []
+//   }
+
+//   window.addEventListener('devicemotion', function (e) {
+//     if (touchEvent) {
+//       rawData.push({'x': e.acceleration.x, 'y': e.acceleration.y, 'z': e.acceleration.z})
+//     }
+//   }, true)
+// })
+
