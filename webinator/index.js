@@ -17,8 +17,6 @@ var App = React.createClass({
   getInitialState: function () {
     return {
       acceleration: {x: 0, y: 0, z: 0},
-      rawData: [],
-      touchEvent: false,
       data: [this.props.data, this.props.data, this.props.data]
     }
   },
@@ -31,6 +29,9 @@ var App = React.createClass({
   },
 
   componentDidMount: function () {
+    this.touchEvent = false
+    this.continuousSend = false
+    this.rawData = []
     this.socket = io('http://192.168.0.5:3000')
     // this.socket = io('http://10.100.131.82:3000')
     // this.socket = io('http://172.16.42.86:3000/')
@@ -43,7 +44,7 @@ var App = React.createClass({
   },
 
   handleMotionChange: function (event) {
-    if (!this.state.touchEvent && !this.continuousSend) return
+    if (!this.touchEvent) return
 
     var acceleration = {
       x: event.acceleration.x,
@@ -72,9 +73,7 @@ var App = React.createClass({
   },
 
   handleGestureStart: function () {
-    this.setState({
-      touchEvent: true
-    })
+    this.touchEvent = true
   },
 
   handleContinuousStart: function () {
@@ -82,22 +81,17 @@ var App = React.createClass({
   },
 
   handleTouchEnd: function () {
-    this.setState({
-      touchEvent: false
-    })
-
+    this.touchEvent = false
     this.continuousSend = false
 
     var inputsNumber = 60
     var inputsArray = []
-    var rawData = this.state.rawData
+    var rawData = this.rawData
 
     // TODO: how do I deal with short gestures?
     // Ignore for now, later maybe interpolation
     if ((rawData.length * 3) < inputsNumber) {
-      this.setState({
-        rawData: []
-      })
+      this.rawData = []
       return
     }
 
@@ -120,11 +114,11 @@ var App = React.createClass({
     }
 
     this.setState({
-      data: [xArray, yArray, zArray],
-      rawData: []
+      data: [xArray, yArray, zArray]
     })
 
-    if (this.state.touchEvent) { this.socket.emit('browser', inputsArray) }
+    this.rawData = []
+    this.socket.emit('browser', inputsArray)
   },
 
   render: function () {
@@ -199,9 +193,9 @@ var App = React.createClass({
                 onTouchEnd={this.handleTouchEnd}>
             Send continuous data
           </div>
-          {this.state.touchEvent ? <div> {this.state.acceleration.x} </div> : null}
-          {this.state.touchEvent ? <div> {this.state.acceleration.y} </div> : null}
-          {this.state.touchEvent ? <div> {this.state.acceleration.z} </div> : null}
+          {this.touchEvent ? <div> {this.state.acceleration.x} </div> : null}
+          {this.touchEvent ? <div> {this.state.acceleration.y} </div> : null}
+          {this.touchEvent ? <div> {this.state.acceleration.z} </div> : null}
         </TabPanel>
 
       </Tabs>
