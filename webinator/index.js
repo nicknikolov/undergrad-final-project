@@ -26,6 +26,11 @@ var App = React.createClass({
       this.motionListener = this.handleMotionChange
       window.addEventListener('devicemotion', this.motionListener, false)
     }
+
+    if (window && window.DeviceOrientationEvent) {
+      this.orientationListner = this.handleOrientationChange
+      window.addEventListener('deviceorientation', this.orientationListner, false)
+    }
   },
 
   componentDidMount: function () {
@@ -40,6 +45,10 @@ var App = React.createClass({
   componentWillUnmount: function () {
     if (window) {
       window.removeEventListener('devicemotion', this.motionListener, false)
+    }
+
+    if (window) {
+      window.removeEventListener('deviceorientation', this.orientationListner, false)
     }
   },
 
@@ -56,20 +65,19 @@ var App = React.createClass({
       acceleration: acceleration
     })
 
-    if (this.state.touchEvent) {
-      var rawData = this.state.rawData
-      rawData.push(acceleration)
+    this.rawData.push(acceleration)
+  },
 
-      if (this.state.touchEvent) {
-        this.setState({
-          rawData: rawData
-        })
-      }
-    } else {
-      var inputsArray = []
-      inputsArray.push(acceleration.x, acceleration.y, acceleration.z)
-      this.socket.emit('browser', inputsArray)
-    }
+  handleOrientationChange: function (event) {
+    if (!this.continuousSend) return
+
+    var inputsArray = []
+    inputsArray.push(
+      event.alpha / 360,
+      event.beta / 180,
+      event.gamma / 90
+    )
+    this.socket.emit('browser', inputsArray)
   },
 
   handleGestureStart: function () {
