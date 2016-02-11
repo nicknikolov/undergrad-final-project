@@ -1,13 +1,12 @@
 {
-  "name": "browserify-example",
+  "name": "webinator",
   "version": "1.0.0",
-  "description": "example with browserify + npm",
+  "description": "wekinator web interface prototype",
   "main": "index.js",
   "license": "MIT",
   "author": {
-    "name": "Matt DesLauriers",
-    "email": "dave.des@gmail.com",
-    "url": "https://github.com/mattdesl"
+    "name": "Nick Nikolov",
+    "url": "https://github.com/nicknikolov"
   },
   "dependencies": {
     "d3": "^3.5.14",
@@ -35,10 +34,5 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git://github.com/mattdesl/browserify-example.git"
   },
-  "homepage": "https://github.com/mattdesl/browserify-example",
-  "bugs": {
-    "url": "https://github.com/mattdesl/browserify-example/issues"
-  }
 }
