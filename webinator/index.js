@@ -91,7 +91,9 @@ var App = React.createClass({
   handleTouchEnd: function () {
     this.touchEvent = false
     this.continuousSend = false
+  },
 
+  sendGestureData: function () {
     var inputsNumber = 60
     var inputsArray = []
     var rawData = this.rawData
@@ -124,7 +126,6 @@ var App = React.createClass({
     this.setState({
       data: [xArray, yArray, zArray]
     })
-
     this.rawData = []
     this.socket.emit('browser', inputsArray)
   },
@@ -195,6 +196,10 @@ var App = React.createClass({
                 onTouchStart={this.handleGestureStart}
                 onTouchEnd={this.handleTouchEnd}>
             Record gesture
+          </div>
+          <div className='button'
+                onTouchEnd={this.sendGestureData}>
+            Send gesture
           </div>
           <div className='button'
                 onTouchStart={this.handleContinuousStart}

@@ -13,11 +13,11 @@ body {
   height: 80px;
   line-height: 5;
   text-align: center;
-  width: 200px;
+  width: 90%;
   color: green;
   border: solid;
   border-width: thin;
-  margin: 5px;
+  margin: 10px auto;
 }
 
 .graph {
