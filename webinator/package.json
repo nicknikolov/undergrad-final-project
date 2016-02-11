@@ -33,6 +33,6 @@
     "tutorial"
   ],
   "repository": {
-    "type": "git",
-  },
+    "type": "git"
+  }
 }
