@@ -1,0 +1,235 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Thin Sectioned Essay
+% LaTeX Template
+% Version 1.0 (3/8/13)
+%
+% This template has been downloaded from:
+% http://www.LaTeXTemplates.com
+%
+% Original Author:
+% Nicolas Diaz (nsdiaz@uc.cl) with extensive modifications by:
+% Vel (vel@latextemplates.com)
+%
+% License:
+% CC BY-NC-SA 3.0 (http://creativecommons.org/licenses/by-nc-sa/3.0/)
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%----------------------------------------------------------------------------------------
+%	PACKAGES AND OTHER DOCUMENT CONFIGURATIONS
+%----------------------------------------------------------------------------------------
+
+\documentclass[a4paper, 11pt]{article}
+% Font size (can be 10pt, 11pt or 12pt) and paper size (remove a4paper for US letter paper)
+
+\usepackage[protrusion=true,expansion=true]{microtype} % Better typography
+\usepackage{graphicx} % Required for including pictures
+\usepackage{wrapfig} % Allows in-line images
+\usepackage{listings,color}
+\usepackage{inconsolata}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage[section]{placeins}
+\usepackage{geometry}
+\usepackage{url}
+
+\makeatletter
+\AtBeginDocument{%
+  \expandafter\renewcommand\expandafter\subsection\expandafter{%
+    \expandafter\@fb@secFB\subsection
+  }%
+}
+\makeatother
+
+\usepackage{mathpazo} % Use the Palatino font
+\usepackage[T1]{fontenc} % Required for accented characters
+\linespread{1.05} % Change line spacing here, Palatino benefits from a slight increase by default
+
+\lstloadlanguages{
+  C,
+  C++,
+  csh,
+  Java
+}
+
+\definecolor{red}{rgb}{0.6,0,0} % for strings
+\definecolor{blue}{rgb}{0,0,0.6}
+\definecolor{green}{rgb}{0,0.8,0}
+\definecolor{cyan}{rgb}{0.0,0.6,0.6}
+
+\lstset{
+  language=csh,
+  basicstyle=\footnotesize\ttfamily,
+  numbers=left,
+  numberstyle=\tiny,
+  numbersep=5pt,
+  tabsize=2,
+  extendedchars=true,
+  breaklines=true,
+  frame=b,
+  stringstyle=\color{blue}\ttfamily,
+  showspaces=false,
+  showtabs=true,
+  xleftmargin=17pt,
+  framexleftmargin=17pt,
+  framexrightmargin=5pt,
+  framexbottommargin=4pt,
+  commentstyle=\color{green},
+  morecomment=[l]{//}, %use comment-line-style!
+  morecomment=[s]{/*}{*/}, %for multiline comments
+  showstringspaces=false,
+  morekeywords={  abstract, event, new, struct,
+    as, explicit, null, switch, base, extern, object, this, bool, false, operator, throw, break,
+    finally, out, true, byte, fixed, override, try, case, float, params, typeof, catch, for,
+    private, uint, char, foreach, protected, ulong, checked, goto, public, unchecked, class, if,
+    readonly, unsafe, const, implicit, ref, ushort, continue, in, return, using, decimal, int,
+    sbyte, virtual, default, interface, sealed, volatile, delegate, internal, short, void, do, is,
+    sizeof, while, double, lock, stackalloc, else, long, static, enum, namespace,
+  string},
+  keywordstyle=\color{cyan},
+  identifierstyle=\color{red},
+}
+
+\makeatletter
+% \renewcommand\@biblabel[1]{\textbf{#1.}} % Change the square brackets for each bibliography item from '[1]' to '1.'
+\renewcommand{\@listI}{\itemsep=0pt} % Reduce the space between items in the itemize and enumerate environments and the bibliography
+
+  \renewcommand{\maketitle}{ % Customize the title - do not edit title and author name here, see the TITLE block below
+    \begin{flushright} % Right align
+      {\LARGE\@title} % Increase the font size of the title
+
+      \vspace{50pt} % Some vertical space between the title and author name
+
+      {\large\@author} % Author name
+      \\\@date % Date
+
+      \vspace{40pt} % Some vertical space between the author block and abstract
+    \end{flushright}
+  }
+
+  %----------------------------------------------------------------------------------------
+  %	TITLE
+  %----------------------------------------------------------------------------------------
+
+  \title{\textbf{Usable Machine Learning}\\ % Title
+  Preliminary Project Report \\
+  \large Supervised by Rebecca Fiebrink} % Subtitle
+
+  \author{\textsc{Nikolay Nikolov} % Author
+  \\{BSc Creative Computing} % Course
+  \\{\textit{Goldsmiths College, University of London}}} % Institution
+
+  \date{\today} % Date
+
+  %----------------------------------------------------------------------------------------
+
+  \begin{document}
+
+  \maketitle % Print the title section
+
+  %----------------------------------------------------------------------------------------
+  %	ESSAY BODY
+  %----------------------------------------------------------------------------------------
+
+  \section{Introduction}
+  Machine Learning is not a new field inside Computer Science. It has evolved from the study of pattern recognition, statistics and AI and has been studied for over 50 years. Its popularity, however, has soared in the last few years thanks to the large amounts of data accumulated by Google and other big tech giants, increase in computing power and algorithmic innovations such as Deep Learning. As any other new (or rediscovered) technology, it is starting to becomes useful outside its initial development niche and is being used in a majority of interesting contexts - from speech recognition to cat recognition. At this stage it is primarily used by experts of the field or experienced computer scientists who can translate research papers into code. But to become a more useful or even groundbreaking consumer tool, it needs to be made available to a less technical crowd or to experts in other fields (designers, artists, medical practitioners etc.). In fact, we see some forms of Machine Learning deployed to users in the form of "Siri", "Cortana" or other consumer-facing products but they rarely have any control on the algorithms or training processes - such implicit learning is never understood by users which makes it a rather one-sided relationship. Furthermore, in such closed models of Machine Learning, it is next to impossible to use a tool outside its initial context which forbids any kind of creative use.
+
+  Only recently Autodesk announced the future of their software will be intelligent tools that learn about you and your workflow as much as you learn to use their software. This embodies the spirit of future digital tools as the symbiosis of predictive algorithms and human creativity can achieve much more than one or the other by itself. The next step is bringing such tools to ubiquitous computing devices such as smartphones, smartwatches, IoT devices, as well as on available platforms such as the Web itself. In order for them to be usable, they will need to include the appropriate user experience and interaction design. Users need to be able to understand the process of training their own data and get precise intuitive feedback to follow up on errors or provide better data.
+
+  Taking inspiration from Rebecca Fiebrink's Wekinator \cite{wekinator} - a piece of software that allows artists to train data coming from multiple sources to control their music instruments or other interactive software, I have decided to apply my past experience and skills in developing web and server applications to prototype an interactive Machine Learning environment where, similarly to Wekinator, people can plug in different data sources and route them to a number of outputs controlling different things. The beauty of the modern web is that the variety of outputs and inputs is enormous and ever growing. From device data such as smartphone motion and orientation data, to the webcam and microphone. The number of APIs that can be fed in and controlled with it is limitless. To create such an environment that makes sense to users and is not too intimidating, I have to provide a gradual learning experience, appropriate UX design and visual, intuitive feedback. While I will strive to provide as much ready-made data sources as possible, I envision an additional component system where people can develop wrappers for the inputs and outputs they want to use but are not provided by default.
+
+  This project topic was initially suggested by my supervisor, Rebecca Fiebrink, from which I developed my current vision. My background knowledge required to successfully complete this project (topics such as Audio-visual programming, Machine Learning, Web Development, User Experience Design and User Testing) is based on both courses I took during my time at Goldsmiths as well as outside experience such as industry work and personal projects. Some of the relevant courses I took are Data Mining, Perception And Multimedia Computing, Databases, Networks and the Web, Creative Projects, Advanced Audio-Visual Processing and Advanced Graphics and Animation while my outside experience includes web development, creating data visualisations, 3D graphics on web using WebGL and server scripting using Node.js. Furthermore, my group project from last year involved creating a mobile IDE using web technologies from which I will reuse a lot of skills and experience.
+
+  \section{Aims and objectives}
+  I aim to create an interactive Machine Learning web environment. Computational creativity has had a long and successful history and after every milestone technological breakthrough, tools, processes, and the way people work has changed radically. I aim to explore how (if at all) Machine Learning methods can have a similar effect when presented in a usable, well-designed form. In order to achieve that I will have to deliver a developed and working web application. Additionally, it would have been tested with potential users and iterated upon based on their feedback. In my report I will outline which processes and workflows were successful and which not. The application should include a working set if inputs and outputs as described in the introduction. Additionally, there will be interactive data visualisations and explanations to guide the process of training data. They will be guided by what users find helpful and what increases their understanding of the process.
+
+  I will hope to discover some of the challenges when teaching people how and why they would want to build their own classifiers and regressions systems. Hopefully, with each iteration I will have a clearer and better understanding of the needs and desires of my testers which would influence my prototype in the direction of satisfactory usability and generally would result in a useful product, albeit I will not regard the factor of commercial polish to be of great importance, at least not in the scope of this project. If the project is successful and potential users state their intention to use it on a regular basis, I will pursue commercialisation or most likely maintain it as an open-source software package, similar to Wekinator's model.
+
+  How I evaluate my project will depend on the quality of the answers to the questions and challenges posed above. The most important part of prototype will be the unique features of interaction between users and Machine Learning algorithms. In order to achieve satisfactory usability at the end of the project, the users must have interacted, understood and practiced a two-way relationship with the tool. Ideally, my piece of software would have been influenced by the user as much as the user by the software.
+
+  In summary, my application can be logically divided in two parts: a training/running section and a feedback/data visualisation guidance section. Each of their UX and UI design will be closely tight to the user feedback after each iteration.
+
+  \section{Methods}
+  I will work on the initial prototype until there is enough content to test with users. After this phase is completed, I will strive to repeat many small iterations of prototyping and testing. This will provide for a tight feedback loop and minimise wasted effort common in "Waterfall"-like methodologies. I will spend most of my working time implementing my application and some additional time reading up on Machine Learning theory or creating mock designs. If in the future my list of tasks and issues grows large and complex, I will resort to using the Github issue system where issues can have tags (bug, feature etc), comments, internal to do lists and so on. A given issue can be closed using a git commit.
+
+  I tend to be a disciplined user of revision control, namely git, which will provide for an atomic historical breakdown of my code, logs and designs. I plan on (and have already started) using contemporary methods and frameworks for implementing my web applications. I will most likely make use of D3.js - the most popular data visualisations JavaScript library for the past few years. Furthermore, my whole project will most likely be a React app. React is a modern JavaScript UI library released three years ago. React is currently being used on the homepages of Feedly, Airbnb, Netflix, Imgur, and many others. It's strength lies in the declarative model, separation of components and it's Virtual Dom innovative rendering.
+
+  All these things provide for very fast and responsive interactive web applications which is precisely what my project is going to become. While I will spend additional time studying such third-party libraries, they will nonetheless save me huge amounts of effort which would equate to me reinventing the wheel in terms of data visualisations graphics and interactive interfaces.
+
+  Server-side scripting and real-time interactions will be handled by Node.js and socket.io, the first being JavaScript in the server and the latter a popular framework for dealing with web sockets. My prototype uses Wekinator to train Machine Learning models but this will be moved to the browser. I will most likely leverage open-source implementations of the same algorithms but this issue requires some more research on my part.
+
+  All chosen methods are standard practice in the industry and open-source development.
+
+  \section{Project Plan}
+  \textbf{22 - 29 February} \\
+  - Develop initial prototype to a testable state with a one or two working inputs and outputs each. \\
+  - Research on JavaScript Machine Learning implementations I can use. \\
+  \textbf{1 - 13 March} \\
+  - Work on moving from Wekinator to a browser-only implementation. \\
+  - Include another input. \\
+  - Write the Introduction chapter and start writing Literature review chapter. \\
+  - Organize between 1 and 2 testing sessions. \\
+  \textbf{14 - 27 March} \\
+  - By the end of this period, I shouldn't be dependant on Wekinator. \\
+  - Include another output. \\
+  - Write Methods chapter and finish Literature review. \\
+  - Draft the rest of the report for submission. \\
+  - Organize between 1 and 2 testing sessions. \\
+  \textbf{28 - 10 March/April} \\
+  - Include another input. \\
+  - Write Methods Chapter. \\
+  - Organize between 1 and 2 testing sessions. \\
+  \textbf{11 - 24 April} \\
+  - Include another output.
+  - Write on the rest of the report. \\
+  - Organize between 1 and 2 testing sessions. \\
+  \textbf{25 - 9 April/May} \\
+  - Include another data input. \\
+  - Finish report. \\
+  - Organize a final testing session. \\
+  \textbf{9 - 16 May} \\
+  - Work on remaining bugs and issues on the Software side. \\
+  - Read and redact report. \\
+
+  \section{Progress To Date}
+  Up until now a few connected but independent working prototypes have been developed. As part of my prototyping phase, I leveraged Wekinator. To use make use of that from a web client, I developed a server script that acts as a router from the web page to Wekinator where it receives data from the first source and translates it into an OSC message which it can then send along to the latter. At this point I could successfully train my data using Wekinator so I developed two prototypes in the form JavaScript programs.
+
+  The first one was the most basic proof of concept I could start with - send mouse x and y coordinates to Wekinator and teach it a few simple shapes. At first, sending raw data was not working very well so I had to implement some preprocessing techniques, namely moving all shapes to a uniform origin and improve my downsampling method. Once that was working, I moved on to extracting motion and orientation data from my smartphone using Web APIs. Since the implementation of this was largely based on the mouse example, a working version was relatively easy to develop.
+
+  Having two working prototypes, I spent some time training and testing. It took some effort to get a kind of intuitive feel for what works and what does not. Lastly, I started adding basic UI features to the mobile interface of the prototype. I included a three graphs each showing the X, y and Z of the device motion data. While not visually intuitive, they provide for a rudimentary way to compare gestures. I have also separated the process of recording a gesture and sending the data over the wire into two buttons. What this means is that you can record a sophisticated gesture by holding the record button, then letting go and picking up from another place. For example,  you could train Wekinator to recognize the "X" shape.
+
+  \section{Planned Work}
+  These past few weeks were spent on prototyping and exploring what is possible with web technologies and Wekinator. I am happy with the fact that I built a working proof of concept. As the Project Plan mentions, I will try to finish up a testable version of my prototype that users that try out and collect feedback for the first iteration. Shortly after that, I will start writing the final report.
+
+  % \begin{figure}[!ht]
+  %   \centering
+  %   \begin{subfigure}[b]{0.48\textwidth}
+  %     \includegraphics[width=1.0\textwidth]{colour-correction.jpg}
+  %     \caption{Colour correction applied}
+  %     \label{fig:colour-correction.jpg}
+  %   \end{subfigure}
+  %   \begin{subfigure}[b]{0.48\textwidth}
+  %     \includegraphics[width=1.0\textwidth]{no-correction.jpg}
+  %     \caption{Colour correction disabled}
+  %     \label{fig:no-correctionjpg}
+  %   \end{subfigure}
+  %   \caption{Colour correction}\label{fig:colour}
+  % \end{figure}
+
+  % \begin{figure}
+  %   \caption{The environment sound group}
+  %   \centering
+  %   \includegraphics[width=1.0\textwidth]{environment-group.jpg}
+  % \end{figure}
+
+  % \begin{lstlisting}[caption=Autistic Perceptor]
+  % \end{lstlisting}
+
+
+  \begin{thebibliography}{9}
+    \bibitem{wekinator}
+      Rebecca Fiebrink "Real-time Interaction with Supervised Learning" (ACM CHI, 2010)
+      \\\texttt{\url{http://www.cs.princeton.edu/~fiebrink/publications/Fiebrink_CHI2010.pdf}}
+  \end{thebibliography}
+
+  \end{document}
