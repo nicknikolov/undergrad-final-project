@@ -2,3 +2,15 @@ node_modules
 *.log
 .DS_Store
 bundle.js
+
+## Core latex/pdflatex auxiliary files:
+*.aux
+*.lof
+*.log
+*.lot
+*.fls
+*.out
+*.toc
+*.fmt
+
+*.fdb_latexmk
