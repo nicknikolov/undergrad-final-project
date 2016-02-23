@@ -17,7 +17,9 @@ var App = React.createClass({
   getInitialState: function () {
     return {
       acceleration: {x: 0, y: 0, z: 0},
-      data: [this.props.data, this.props.data, this.props.data]
+      data: [this.props.data, this.props.data, this.props.data],
+      sessionName: '',
+      remoteSessionName: ''
     }
   },
 
@@ -40,6 +42,10 @@ var App = React.createClass({
     this.socket = io('http://192.168.0.5:3000')
     // this.socket = io('http://10.100.131.82:3000')
     // this.socket = io('http://172.16.42.86:3000/')
+
+    this.socket.on('inputs', function (event) {
+      this.setState({data: event})
+    }.bind(this))
   },
 
   componentWillUnmount: function () {
@@ -77,7 +83,7 @@ var App = React.createClass({
       event.beta / 180,
       event.gamma / 90
     )
-    this.socket.emit('browser', inputsArray)
+    this.socket.emit('browser', {'inputs': inputsArray, 'id': this.state.remoteSessionName})
   },
 
   handleGestureStart: function () {
@@ -127,7 +133,23 @@ var App = React.createClass({
       data: [xArray, yArray, zArray]
     })
     this.rawData = []
-    this.socket.emit('browser', inputsArray)
+    this.socket.emit('browser', {'inputs': inputsArray,
+                                  'xArray': xArray,
+                                  'yArray': yArray,
+                                  'zArray': zArray,
+                                  'id': this.state.remoteSessionName})
+  },
+
+  handleSessionName: function (event) {
+    this.setState({sessionName: event.target.value})
+  },
+
+  handleRemoteSessionName: function (event) {
+    this.setState({remoteSessionName: event.target.value})
+  },
+
+  setSessionName: function () {
+    this.socket.emit('id', this.state.sessionName)
   },
 
   render: function () {
@@ -184,6 +206,7 @@ var App = React.createClass({
         <TabList>
           <Tab>Graphs</Tab>
           <Tab>Record</Tab>
+          <Tab>Session</Tab>
         </TabList>
 
         <TabPanel>
@@ -206,9 +229,26 @@ var App = React.createClass({
                 onTouchEnd={this.handleTouchEnd}>
             Send continuous data
           </div>
+          Remote session name:
+          <input
+            type='text'
+            value={this.state.remoteSessionName}
+            onChange={this.handleRemoteSessionName}
+          />
           {this.touchEvent ? <div> {this.state.acceleration.x} </div> : null}
           {this.touchEvent ? <div> {this.state.acceleration.y} </div> : null}
           {this.touchEvent ? <div> {this.state.acceleration.z} </div> : null}
+        </TabPanel>
+        <TabPanel>
+          <input
+            type='text'
+            value={this.state.sessionName}
+            onChange={this.handleSessionName}
+          />
+          <div className='button'
+                onClick={this.setSessionName}>
+            Set session name
+          </div>
         </TabPanel>
 
       </Tabs>

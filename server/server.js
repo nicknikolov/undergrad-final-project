@@ -6,14 +6,24 @@ var remoteIp = '127.0.0.1'
 var remotePort = 6448
 
 var udpServer = dgram.createSocket('udp4')
+var users = {}
 
 // Get xy coordinates from browser, create an OSC message and send to Wekinator
 io.on('connection', (socket) => {
   console.log('user connected')
 
-  socket.on('browser', (data) => {
+  socket.on('id', (data) => {
+    users[data] = socket.id
+    console.log('session ' + data + ' set')
+  })
 
-    console.log(data)
+  socket.on('browser', (event) => {
+
+    console.log(event)
+
+    var data = event.inputs
+
+    io.to(users[event.id]).emit('inputs', [ event.xArray, event.yArray, event.zArray] )
 
     var args = []
 
