@@ -18,6 +18,7 @@ body {
   border: solid;
   border-width: thin;
   margin: 10px auto;
+  cursor: pointer;
 }
 
 .graph {
