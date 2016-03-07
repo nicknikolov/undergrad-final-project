@@ -10,13 +10,21 @@
   },
   "dependencies": {
     "d3": "^3.5.14",
+    "ml-knn": "^1.0.0",
     "react": "^0.14.7",
+    "react-bootstrap": "^0.28.3",
     "react-dom": "^0.14.7",
     "react-faux-dom": "^2.1.1",
-    "react-tabs": "^0.5.3",
+    "react-radio-group": "^2.2.0",
+    "react-redux": "^4.4.0",
+    "react-router": "^2.0.0",
+    "react-select": "^1.0.0-beta10",
+    "react-widgets": "^3.2.0",
+    "redux": "^3.3.1",
     "socket.io-client": "^1.4.5"
   },
   "devDependencies": {
+    "babel-preset-es2015": "^6.5.0",
     "babel-preset-react": "^6.5.0",
     "babelify": "^7.2.0",
     "browserify": "^13.0.0",
@@ -26,13 +34,23 @@
     "uglify-js": "^2.6.1"
   },
   "scripts": {
-    "start": "budo index.js:bundle.js --live --open --onupdate \"standard --verbose | snazzy\" -- -t [ babelify --presets [react] ]",
+    "start": "budo index.js:bundle.js --live --open --onupdate \"standard --verbose | snazzy\" -- -t [ babelify --presets [react es2015] ]",
     "build": "browserify index.js | uglifyjs -m -c warnings=false > bundle.js"
   },
-  "keywords": [
-    "tutorial"
-  ],
   "repository": {
     "type": "git"
+  },
+  "browserify": {
+    "transform": [
+      [
+        "babelify",
+        {
+          "presets": [
+            "es2015",
+            "react"
+          ]
+        }
+      ]
+    ]
   }
 }
