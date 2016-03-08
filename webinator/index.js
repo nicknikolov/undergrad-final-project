@@ -8,9 +8,6 @@ import configureStore from './store/configureStore'
 import App from './containers/App'
 import Mobile from './components/Mobile'
 
-// let store = createStore(trainingData,
-//                         {},
-//                         window.devToolsExtension ? window.devToolsExtension() : undefined)
 let store = configureStore()
 
 render(

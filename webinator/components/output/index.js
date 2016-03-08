@@ -10,7 +10,8 @@ var Inputs = React.createClass({
     setIsRunning: React.PropTypes.func,
     isRunning: React.PropTypes.bool,
     setSelectedClass: React.PropTypes.func,
-    dataForPrediction: React.PropTypes.array
+    dataForPrediction: React.PropTypes.array,
+    rules: React.PropTypes.object
   },
 
   getInitialState: function () {
@@ -47,6 +48,7 @@ var Inputs = React.createClass({
               createModel={this.createModel}
               setWords={this.setWords}
               setSelectedClass={this.props.setSelectedClass}
+              rules={this.props.rules}
             />
           </Row>
         </Tab>

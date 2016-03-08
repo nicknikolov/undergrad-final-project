@@ -61,9 +61,9 @@ var Mobile = React.createClass({
 
     var inputsArray = []
     inputsArray.push(
-      event.alpha / 360,
-      event.beta / 180,
-      event.gamma / 90
+      event.alpha,
+      event.beta,
+      event.gamma
     )
     this.socket.emit('browser', {'inputs': inputsArray, 'id': this.state.remoteSessionName})
   },

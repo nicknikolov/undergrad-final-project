@@ -8,7 +8,8 @@ var Model = React.createClass({
     setWords: React.PropTypes.func,
     setSelectedClass: React.PropTypes.func,
     numberOfClasses: React.PropTypes.number,
-    inputs: React.PropTypes.array
+    inputs: React.PropTypes.array,
+    rules: React.PropTypes.object
   },
 
   getInitialState: function () {
@@ -41,14 +42,14 @@ var Model = React.createClass({
 
       var c = []
       for (let k = 0; k < obj.data.x.length; k++) {
-        c.push(obj.data.x[i])
-        c.push(obj.data.y[i])
-        c.push(obj.data.z[i])
+        if (this.props.rules.x) c.push(obj.data.x[i])
+        if (this.props.rules.y) c.push(obj.data.y[i])
+        if (this.props.rules.z) c.push(obj.data.z[i])
       }
 
       cases.push(c)
       labels.push(obj.selectedClass)
-    })
+    }.bind(this))
 
     this.props.createModel(cases, labels)
     this.setState({ trained: true, usedExamples: this.props.inputs.length })

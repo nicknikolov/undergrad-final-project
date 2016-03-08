@@ -14,7 +14,8 @@ const App = React.createClass({
       sessionName: 'test',
       isRunning: false,
       dataForPrediction: [],
-      selectedClass: 0
+      selectedClass: 0,
+      rules: { x: true, y: true, z: true }
     }
   },
 
@@ -28,9 +29,9 @@ const App = React.createClass({
         let data = { x: event[0], y: event[1], z: event[2] }
         let arr = []
         for (let i = 0; i < data.x.length; i++) {
-          arr.push(data.x[i])
-          arr.push(data.y[i])
-          arr.push(data.z[i])
+          if (this.state.rules.x) arr.push(data.x[i])
+          if (this.state.rules.y) arr.push(data.y[i])
+          if (this.state.rules.z) arr.push(data.z[i])
         }
         this.setState({dataForPrediction: arr})
       } else {
@@ -48,12 +49,18 @@ const App = React.createClass({
     if (this.state.isRunning) {
       let arr = []
       for (let i = 0; i < data.x.length; i++) {
-        arr.push(data.x[i])
-        arr.push(data.y[i])
-        arr.push(data.z[i])
+        if (this.state.rules.x) arr.push(data.x[i])
+        if (this.state.rules.y) arr.push(data.y[i])
+        if (this.state.rules.z) arr.push(data.z[i])
       }
       this.setState({dataForPrediction: arr})
     }
+  },
+
+  setRules: function (coord) {
+    let rules = this.state.rules
+    rules[coord] = !this.state.rules[coord]
+    this.setState({ rules: rules })
   },
 
   handleSessionName: function (event) {
@@ -89,6 +96,8 @@ const App = React.createClass({
           <Col lg={6}>
             <Input
               resend={this.resend}
+              rules={this.state.rules}
+              setRules={this.setRules}
             />
           </Col>
           <Col lg={6}>
@@ -97,6 +106,7 @@ const App = React.createClass({
               isRunning={this.state.isRunning}
               setSelectedClass={this.setSelectedClass}
               dataForPrediction={this.state.dataForPrediction}
+              rules={this.state.rules}
             />
           </Col>
         </Row>
