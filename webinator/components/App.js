@@ -53,7 +53,7 @@ const App = React.createClass({
         arr.push(data.z[i])
       }
       this.setState({dataForPrediction: arr})
-    }   
+    }
   },
 
   handleSessionName: function (event) {
