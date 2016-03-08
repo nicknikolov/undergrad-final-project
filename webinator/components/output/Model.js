@@ -16,7 +16,8 @@ var Model = React.createClass({
       words: [],
       classes: [],
       trainedClass: 0,
-      trained: false
+      trained: false,
+      usedExamples: 0
     }
   },
 
@@ -50,6 +51,7 @@ var Model = React.createClass({
     })
 
     this.props.createModel(cases, labels)
+    this.setState({ trained: true, usedExamples: this.props.inputs.length })
   },
 
   render: function () {
@@ -75,7 +77,7 @@ var Model = React.createClass({
     }
 
     let buttonName = this.state.trained ? 'Retrain' : 'Train'
-    let disableButton = !(this.props.inputs.length > 1)
+    let disableButton = !(this.props.inputs.length > 1 && this.props.inputs.length > this.state.usedExamples)
 
     return (
       <div>
