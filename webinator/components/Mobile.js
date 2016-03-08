@@ -81,6 +81,10 @@ var Mobile = React.createClass({
     this.continuousSend = false
   },
 
+  cancelGesture: function () {
+    this.rawData = []
+  },
+
   sendGestureData: function () {
     var inputsNumber = 60
     var inputsArray = []
@@ -141,6 +145,14 @@ var Mobile = React.createClass({
             bsStyle='primary'
             onTouchEnd={this.sendGestureData}>
             Send Gesture
+          </Button>
+        </div>
+        <div>
+          <Button
+            bsSize='large'
+            bsStyle='primary'
+            onTouchEnd={this.cancelGesture}>
+            Cancel Gesture
           </Button>
         </div>
         <div>
