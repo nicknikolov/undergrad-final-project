@@ -98,6 +98,7 @@ const App = React.createClass({
               resend={this.resend}
               rules={this.state.rules}
               setRules={this.setRules}
+              isRunning={this.state.isRunning}
             />
           </Col>
           <Col lg={6}>

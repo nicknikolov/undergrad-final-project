@@ -6,7 +6,8 @@ import { Button } from 'react-bootstrap'
 var Inputs = React.createClass({
   propTypes: {
     inputs: React.PropTypes.array,
-    resend: React.PropTypes.func
+    resend: React.PropTypes.func,
+    isRunning: React.PropTypes.bool
   },
 
   getInitialState: function () {
@@ -87,7 +88,7 @@ var Inputs = React.createClass({
         <div> { nodes[2].toReact() } </div>
         <Button bsStyle='primary' disabled={prev} onClick={this.prev}>Prev</Button>
         <Button bsStyle='primary' disabled={next} onClick={this.next}>Next</Button>
-        <Button bsStyle='primary' onClick={this.handleResend}>Resend</Button>
+        <Button bsStyle='primary' disabled={!this.props.isRunning} onClick={this.handleResend}>Resend</Button>
       </div>
     )
   }
