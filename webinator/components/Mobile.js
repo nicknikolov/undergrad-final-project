@@ -1,6 +1,7 @@
 import React from 'react'
 import { Button } from 'react-bootstrap'
 import io from 'socket.io-client'
+import ip from 'ip'
 
 var Mobile = React.createClass({
 
@@ -25,9 +26,7 @@ var Mobile = React.createClass({
     this.touchEvent = false
     this.continuousSend = false
     this.rawData = []
-    this.socket = io('http://192.168.0.5:3000')
-    // this.socket = io('http://10.100.131.82:3000')
-    // this.socket = io('http://172.16.42.86:3000/')
+    this.socket = io('http://' + ip.address() + ':3000')
   },
 
   componentWillUnmount: function () {

@@ -3,6 +3,7 @@ import io from 'socket.io-client'
 import Output from './output'
 import Input from './input'
 import { Button, Grid, Col, Row } from 'react-bootstrap'
+import ip from 'ip'
 
 const App = React.createClass({
   propTypes: {
@@ -20,9 +21,7 @@ const App = React.createClass({
   },
 
   componentDidMount: function () {
-    this.socket = io('http://192.168.0.5:3000')
-    // this.socket = io('http://10.100.131.82:3000')
-    // this.socket = io('http://172.16.42.86:3000/')
+    this.socket = io('http://' + ip.address() + ':3000')
 
     this.socket.on('inputs', (event) => {
       if (this.state.isRunning) {
