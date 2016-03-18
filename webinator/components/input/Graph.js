@@ -25,7 +25,7 @@ var Inputs = React.createClass({
   },
 
   handleResend: function () {
-    this.props.resend(this.props.inputs[this.state.selectedIndex])
+    this.props.resend(this.props.inputs[this.props.inputs.length - this.state.selectedIndex])
   },
 
   render: function () {
