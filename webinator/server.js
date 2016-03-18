@@ -1,4 +1,5 @@
 const express = require('express')
+const path = require('path')
 const app = express()
 const http = require('http').Server(app)
 app.use(express.static('.'))
@@ -14,8 +15,8 @@ const remotePort = 6448
 const udpServer = dgram.createSocket('udp4')
 const users = {}
 
-app.get('/', function(req, res){
-  res.sendFile(__dirname + '/index.html')
+app.get('/', function (req, res) {
+  res.sendFile(path.join(__dirname, '/index.html'))
 })
 
 // io.on('connection', function(socket){
@@ -33,12 +34,11 @@ io.on('connection', (socket) => {
   })
 
   socket.on('browser', (event) => {
-
     console.log(event)
 
     var data = event.inputs
 
-    io.to(users[event.id]).emit('inputs', [ event.xArray, event.yArray, event.zArray] )
+    io.to(users[event.id]).emit('inputs', [event.xArray, event.yArray, event.zArray])
 
     var args = []
 
@@ -57,10 +57,9 @@ io.on('connection', (socket) => {
 
     udpServer.send(oscMsg, 0, oscMsg.length, remotePort, remoteIp)
     console.log('OSC message sent to ' + remoteIp + ':' + remotePort)
-
   })
 })
 
-http.listen(3000, function(){
+http.listen(3000, function () {
   console.log('listening on *:3000')
 })

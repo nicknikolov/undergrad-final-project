@@ -83,9 +83,9 @@ var Inputs = React.createClass({
     return (
       <div>
         <h3>Motion Data Graphs</h3>
-        <div> { nodes[0].toReact() } </div>
-        <div> { nodes[1].toReact() } </div>
-        <div> { nodes[2].toReact() } </div>
+        <div>{nodes[0].toReact()}</div>
+        <div>{nodes[1].toReact()}</div>
+        <div>{nodes[2].toReact()}</div>
         <Button bsStyle='primary' disabled={prev} onClick={this.prev}>Prev</Button>
         <Button bsStyle='primary' disabled={next} onClick={this.next}>Next</Button>
         <Button bsStyle='primary' disabled={!this.props.isRunning} onClick={this.handleResend}>Resend</Button>

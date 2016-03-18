@@ -72,7 +72,7 @@ var Model = React.createClass({
       let n = this.props.inputs.filter((input) => { return input.selectedClass === i })
       examples.push(
         <div key={i} className='radio-button'>
-          { n.length }
+          {n.length}
         </div>
       )
     }
