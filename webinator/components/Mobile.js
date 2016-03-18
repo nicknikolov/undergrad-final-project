@@ -106,9 +106,9 @@ var Mobile = React.createClass({
     var zArray = []
 
     for (var i = 0; i < inputsNumber / 3; i++) {
-      var x = rawData[Math.round(sampleIndex)].x * 10
-      var y = rawData[Math.round(sampleIndex)].y * 10
-      var z = rawData[Math.round(sampleIndex)].z * 10
+      var x = rawData[Math.round(sampleIndex)].x
+      var y = rawData[Math.round(sampleIndex)].y
+      var z = rawData[Math.round(sampleIndex)].z
       inputsArray.push(x, y, z)
       xArray.push(x)
       yArray.push(y)

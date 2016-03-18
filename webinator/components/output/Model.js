@@ -42,9 +42,9 @@ var Model = React.createClass({
 
       var c = []
       for (let k = 0; k < obj.data.x.length; k++) {
-        if (this.props.rules.x) c.push(obj.data.x[i])
-        if (this.props.rules.y) c.push(obj.data.y[i])
-        if (this.props.rules.z) c.push(obj.data.z[i])
+        if (this.props.rules.x) c.push(obj.data.x[k])
+        if (this.props.rules.y) c.push(obj.data.y[k])
+        if (this.props.rules.z) c.push(obj.data.z[k])
       }
 
       cases.push(c)
