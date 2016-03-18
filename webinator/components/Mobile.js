@@ -1,7 +1,6 @@
 import React from 'react'
 import { Button } from 'react-bootstrap'
 import io from 'socket.io-client'
-import ip from 'ip'
 
 var Mobile = React.createClass({
 

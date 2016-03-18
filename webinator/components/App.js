@@ -3,7 +3,6 @@ import io from 'socket.io-client'
 import Output from './output'
 import Input from './input'
 import { Button, Grid, Col, Row } from 'react-bootstrap'
-import ip from 'ip'
 
 const App = React.createClass({
   propTypes: {
