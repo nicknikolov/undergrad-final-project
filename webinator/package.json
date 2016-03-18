@@ -42,6 +42,7 @@
   },
   "scripts": {
     "start": "budo index.js:bundle.js --open --onupdate \"standard --verbose | snazzy\" -- -p livereactload",
+    "watch": "watchify index.js -o bundle.js -p livereactload",
     "build": "browserify index.js | uglifyjs -m -c warnings=false > bundle.js"
   },
   "repository": {
