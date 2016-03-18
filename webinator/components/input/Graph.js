@@ -29,7 +29,7 @@ var Inputs = React.createClass({
   },
 
   render: function () {
-    var m = [10, 10, 25, 45] // margins
+    var m = [10, 10, 25, 55] // margins
     var w = 300 - m[1] - m[3] // width
     var h = 200 - m[0] - m[2] // height
     var selectedDataSet = this.props.inputs[this.props.inputs.length - this.state.selectedIndex]
