@@ -10,8 +10,10 @@
   },
   "dependencies": {
     "d3": "^3.5.14",
+    "express": "^4.13.4",
     "ip": "^1.1.2",
     "ml-knn": "^1.0.0",
+    "osc-min": "^1.1.1",
     "react": "^0.14.7",
     "react-bootstrap": "^0.28.3",
     "react-dom": "^0.14.7",
@@ -23,6 +25,7 @@
     "react-widgets": "^3.2.0",
     "redux": "^3.3.1",
     "redux-thunk": "^2.0.1",
+    "socket.io": "^1.4.5",
     "socket.io-client": "^1.4.5"
   },
   "devDependencies": {

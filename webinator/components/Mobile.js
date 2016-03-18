@@ -26,7 +26,9 @@ var Mobile = React.createClass({
     this.touchEvent = false
     this.continuousSend = false
     this.rawData = []
-    this.socket = io('http://' + ip.address() + ':3000')
+    // this.socket = io('http://' + ip.address() + ':3000')
+    // this.socket = io('127.0.0.1:3000')
+    this.socket = io()
   },
 
   componentWillUnmount: function () {

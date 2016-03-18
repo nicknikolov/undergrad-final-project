@@ -21,7 +21,7 @@ const App = React.createClass({
   },
 
   componentDidMount: function () {
-    this.socket = io('http://' + ip.address() + ':3000')
+    this.socket = io()
 
     this.socket.on('inputs', (event) => {
       if (this.state.isRunning) {
