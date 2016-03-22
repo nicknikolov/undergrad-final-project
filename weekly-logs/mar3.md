@@ -1,0 +1,2 @@
+This week was productive in terms of fixing nasty bugs and brining my app to a testable state.
+I have also combined the server and front-end apps into one (they were independent before) as this simplified deploying it on the server, but also there is little reason to keep them separate at this point. The old examples are still in my repo so they can be used as before. [The KNN bug was rather embarrassing on my part.](https://github.com/nicknikolov/undergrad-final-project/commit/7225bcadc12e67ee0ab3b042567725355592697b)
