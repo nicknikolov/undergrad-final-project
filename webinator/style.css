@@ -1,9 +1,9 @@
 * {
-  font-family: "Andale Mono";
+  font-family: "helvetica neue", arial, sans-serif;
 }
 
-#make-button {
-  margin-top: 40px;
+.more-space {
+  margin-bottom: 15px;
 }
 
 .radio-button {

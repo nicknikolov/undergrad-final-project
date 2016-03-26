@@ -1,5 +1,5 @@
 import React from 'react'
-import { Row, Tabs, Tab } from 'react-bootstrap'
+import { Panel, Row, Tabs, Tab } from 'react-bootstrap'
 import Generator from './Generator'
 import Run from './Run'
 import Model from '../../containers/output/Model'
@@ -41,8 +41,10 @@ var Inputs = React.createClass({
     return (
       <Tabs defaultActiveKey={1}>
         <Tab eventKey={1} title='Train'>
-          <Row><Generator setNumberOfClasses={this.setNumberOfClasses}/></Row>
-          <Row>
+          <Panel header={(<h4>Model Generator</h4>)}>
+            <Generator setNumberOfClasses={this.setNumberOfClasses}/>
+          </Panel>
+          <Panel header={(<h4>Model</h4>)}>
             <Model
               numberOfClasses={this.state.numberOfClasses}
               createModel={this.createModel}
@@ -50,7 +52,7 @@ var Inputs = React.createClass({
               setSelectedClass={this.props.setSelectedClass}
               rules={this.props.rules}
             />
-          </Row>
+          </Panel>
         </Tab>
         <Tab eventKey={2} title='Run'>
           <Run
