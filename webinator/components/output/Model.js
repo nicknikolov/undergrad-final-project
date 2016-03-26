@@ -1,5 +1,5 @@
 import React from 'react'
-import { Button, Col } from 'react-bootstrap'
+import { ButtonToolbar, Popover, OverlayTrigger, Row, Col, Button } from 'react-bootstrap'
 import RadioGroup from 'react-radio-group'
 
 var Model = React.createClass({
@@ -81,12 +81,14 @@ var Model = React.createClass({
     let disableButton = !(this.props.inputs.length > 1 && this.props.inputs.length > this.state.usedExamples)
 
     return (
+      // TODO: this whole thing should be rewritten
       <div>
-        <Col md={3}>
+        <Row>
+        <Col md={4}>
           <h5>Classes</h5>
           {classes}
         </Col>
-        <Col md={3}>
+        <Col md={4}>
           <h5>Trained Class</h5>
           <RadioGroup
             name='classes'
@@ -115,15 +117,28 @@ var Model = React.createClass({
           <h5>Examples</h5>
           {examples}
         </Col>
+      </Row>
+      <Row>
         <Col md={3}>
-          <Button
-            id='make-button'
-            bsStyle='primary'
-            disabled={disableButton}
-            onClick={this.train}>
-            {buttonName}
-          </Button>
+          <ButtonToolbar>
+            <Button
+              id='make-button'
+              bsStyle='primary'
+              disabled={disableButton}
+              onClick={this.train}>
+              {buttonName}
+            </Button>
+            <OverlayTrigger trigger='click' placement='bottom' overlay={
+              <Popover title='Words'>
+                Write the different words that you would to be the output of your model.
+                Click on the Trained Class button when you are sending training examples for each word.
+              </Popover>
+              }>
+              <Button bsStyle="default">Help</Button>
+            </OverlayTrigger>
+          </ButtonToolbar>
         </Col>
+      </Row>
       </div>
     )
   }
