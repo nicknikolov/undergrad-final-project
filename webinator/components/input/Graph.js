@@ -1,7 +1,7 @@
 import ReactFauxDOM from 'react-faux-dom'
 import React from 'react'
 import d3 from 'd3'
-import { Row, Col, Button } from 'react-bootstrap'
+import { ButtonToolbar, Panel, Row, Col, Button } from 'react-bootstrap'
 
 var Inputs = React.createClass({
   propTypes: {
@@ -82,34 +82,37 @@ var Inputs = React.createClass({
     var next = this.state.selectedIndex === 1
     return (
       <div>
-        <h4>Motion Data Graphs</h4>
-        <Row>
-          <Col md={5}>{nodes[0].toReact()}</Col>
-          <Col md={3}>
-            This graph shows you how you moved your device
-            <span style={{color: 'red'}}><b> left </b></span> and
-            <span style={{color: 'red'}}><b> right</b></span>.
-          </Col>
-        </Row>
-        <Row>
-          <Col md={5}>{nodes[1].toReact()}</Col>
-          <Col md={3}>
-            This graph shows you how you moved your device
-            <span style={{color: 'blue'}}><b> up </b></span> and
-            <span style={{color: 'blue'}}><b> down</b></span>.
-          </Col>
-        </Row>
-        <Row>
-          <Col md={5}>{nodes[2].toReact()}</Col>
-          <Col md={3}>
-            This graph shows you how you moved your device
-            <span style={{color: 'green'}}><b> further away </b></span> and
-            <span style={{color: 'green'}}><b> closer to you</b></span>.
-          </Col>
-        </Row>
-        <Button bsStyle='primary' disabled={prev} onClick={this.prev}>Prev</Button>
-        <Button bsStyle='primary' disabled={next} onClick={this.next}>Next</Button>
-        <Button bsStyle='primary' disabled={!this.props.isRunning} onClick={this.handleResend}>Resend</Button>
+        <Panel header={(<h4>Motion Data Graphs</h4>)}>
+          <Row>
+            <Col md={5}>{nodes[0].toReact()}</Col>
+            <Col md={3}>
+              This graph shows you how you moved your device
+              <span style={{color: 'red'}}><b> left </b></span> and
+              <span style={{color: 'red'}}><b> right</b></span>.
+            </Col>
+          </Row>
+          <Row>
+            <Col md={5}>{nodes[1].toReact()}</Col>
+            <Col md={3}>
+              This graph shows you how you moved your device
+              <span style={{color: 'blue'}}><b> up </b></span> and
+              <span style={{color: 'blue'}}><b> down</b></span>.
+            </Col>
+          </Row>
+          <Row>
+            <Col md={5}>{nodes[2].toReact()}</Col>
+            <Col md={3}>
+              This graph shows you how you moved your device
+              <span style={{color: 'green'}}><b> further away </b></span> and
+              <span style={{color: 'green'}}><b> closer to you</b></span>.
+            </Col>
+          </Row>
+          <ButtonToolbar>
+            <Button bsStyle='primary' disabled={prev} onClick={this.prev}>Prev</Button>
+            <Button bsStyle='primary' disabled={next} onClick={this.next}>Next</Button>
+            <Button bsStyle='primary' disabled={!this.props.isRunning} onClick={this.handleResend}>Resend</Button>
+          </ButtonToolbar>
+        </Panel>
       </div>
     )
   }
