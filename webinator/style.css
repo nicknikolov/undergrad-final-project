@@ -2,6 +2,10 @@
   font-family: "helvetica neue", arial, sans-serif;
 }
 
+body {
+  background-color: #f9f9f9 !important;
+}
+
 .more-space {
   margin-bottom: 15px;
 }
