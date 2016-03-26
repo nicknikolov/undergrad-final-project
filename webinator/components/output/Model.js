@@ -83,11 +83,11 @@ var Model = React.createClass({
     return (
       <div>
         <Col md={3}>
-          <h4>Classes</h4>
+          <h5>Classes</h5>
           {classes}
         </Col>
         <Col md={3}>
-          <h4>Trained Class</h4>
+          <h5>Trained Class</h5>
           <RadioGroup
             name='classes'
             selectedValue={this.state.trainedClass}
@@ -112,7 +112,7 @@ var Model = React.createClass({
           </RadioGroup>
         </Col>
         <Col md={3}>
-          <h4>Examples</h4>
+          <h5>Examples</h5>
           {examples}
         </Col>
         <Col md={3}>

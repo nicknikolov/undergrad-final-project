@@ -40,7 +40,7 @@ var Generator = React.createClass({
     return (
       <div>
         <Col md={3}>
-          <h4>Learning</h4>
+          <h5>Learning</h5>
           <DropdownList
             defaultValue={this.state.learningType}
             data={this.state.learningOptions}
@@ -48,14 +48,14 @@ var Generator = React.createClass({
           />
         </Col>
         <Col md={3}>
-          <h4>Classes</h4>
+          <h5>Classes</h5>
           <NumberPicker
             value={this.state.numberOfClasses}
             onChange={this.handleNumberOfClasses}
           />
         </Col>
         <Col md={3}>
-          <h4>Output</h4>
+          <h5>Output</h5>
           <DropdownList
             defaultValue={this.state.outputType}
             data={this.state.outputOptions}
