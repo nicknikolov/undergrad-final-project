@@ -132,6 +132,9 @@ var Model = React.createClass({
               <Popover title='Words'>
                 Write the different words that you would to be the output of your model.
                 Click on the Trained Class button when you are sending training examples for each word.
+                Training is done whenever you think you have provided enough examples.
+                For simpler data, only a few are enough. If you want to improve the model you can
+                always retrain when you have provided more examples.
               </Popover>
               }>
               <Button bsStyle="default">Help</Button>
