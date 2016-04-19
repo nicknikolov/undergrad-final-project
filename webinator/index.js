@@ -1,11 +1,9 @@
 import React from 'react'
 import { render } from 'react-dom'
-// import { createStore } from 'redux'
 import { Provider } from 'react-redux'
 import { Router, Route, hashHistory } from 'react-router'
-// import trainingData from './reducers'
 import configureStore from './store/configureStore'
-import App from './containers/App'
+import App from './components/App'
 import Mobile from './components/Mobile'
 
 let store = configureStore()

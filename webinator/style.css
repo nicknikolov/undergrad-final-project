@@ -6,14 +6,6 @@ body {
   background-color: #f9f9f9 !important;
 }
 
-.more-space {
-  margin-bottom: 15px;
-}
-
-.radio-button {
-  height: 28px;
-}
-
 .graph {
   position: absolute;
   left: 0;

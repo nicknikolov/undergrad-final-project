@@ -1,10 +1,8 @@
 import { combineReducers } from 'redux'
-import inputs from './inputs.js'
-import selectedClass from './selectedClass.js'
+import inputs from './inputs'
 
 const trainingData = combineReducers({
-  inputs,
-  selectedClass
+  inputs
 })
 
 export default trainingData

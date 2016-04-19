@@ -7,13 +7,18 @@ var Inputs = React.createClass({
   propTypes: {
     inputs: React.PropTypes.array,
     resend: React.PropTypes.func,
-    isRunning: React.PropTypes.bool
+    deleteExample: React.PropTypes.func,
+    classIndex: React.PropTypes.number
   },
 
   getInitialState: function () {
     return {
       selectedIndex: 1
     }
+  },
+
+  componentWillReceiveProps: function () {
+    this.setState({ selectedIndex: 1 })
   },
 
   prev: function () {
@@ -28,12 +33,19 @@ var Inputs = React.createClass({
     this.props.resend(this.props.inputs[this.props.inputs.length - this.state.selectedIndex])
   },
 
+  deleteExample: function () {
+    let currentIndex = this.props.inputs.length - this.state.selectedIndex
+    let firstHalf = this.props.inputs.slice(0, currentIndex)
+    let secondHalf = this.props.inputs.slice(currentIndex + 1, this.props.inputs.length)
+    this.props.deleteExample([...firstHalf, ...secondHalf])
+  },
+
   render: function () {
     var m = [10, 10, 25, 55] // margins
     var w = 300 - m[1] - m[3] // width
     var h = 200 - m[0] - m[2] // height
     var selectedDataSet = this.props.inputs[this.props.inputs.length - this.state.selectedIndex]
-    var data = [selectedDataSet.data.x, selectedDataSet.data.y, selectedDataSet.data.z]
+    var data = [selectedDataSet.x, selectedDataSet.y, selectedDataSet.z]
 
     var x = d3.scale.linear().domain([0, data[0].length]).range([0, w])
     var y = d3.scale.linear().domain([-7, 7]).range([h, 0])
@@ -83,6 +95,12 @@ var Inputs = React.createClass({
     return (
       <div>
         <Panel header={(<h4>Motion Data Graphs</h4>)}>
+          <ButtonToolbar>
+            <Button bsStyle='primary' disabled={prev} onClick={this.prev}>Prev</Button>
+            <Button bsStyle='primary' disabled={next} onClick={this.next}>Next</Button>
+            <Button bsStyle='primary' onClick={this.handleResend}>Resend</Button>
+            <Button bsStyle='danger' onClick={this.deleteExample}>Delete</Button>
+          </ButtonToolbar>
           <Row>
             <Col md={5}>{nodes[0].toReact()}</Col>
             <Col md={3}>
@@ -107,11 +125,6 @@ var Inputs = React.createClass({
               <span style={{color: 'green'}}><b> closer to you</b></span>.
             </Col>
           </Row>
-          <ButtonToolbar>
-            <Button bsStyle='primary' disabled={prev} onClick={this.prev}>Prev</Button>
-            <Button bsStyle='primary' disabled={next} onClick={this.next}>Next</Button>
-            <Button bsStyle='primary' disabled={!this.props.isRunning} onClick={this.handleResend}>Resend</Button>
-          </ButtonToolbar>
         </Panel>
       </div>
     )

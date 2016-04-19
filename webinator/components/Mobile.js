@@ -7,7 +7,7 @@ var Mobile = React.createClass({
   getInitialState: function () {
     return {
       acceleration: {x: 0, y: 0, z: 0},
-      remoteSessionName: 'test'
+      remoteSessionName: 'test session'
     }
   },
 
