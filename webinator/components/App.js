@@ -248,8 +248,11 @@ const App = React.createClass({
         <ListGroupItem key={2}>
           <span> Good. You can always change it something else above. Now, send over your first gesture... </span>
           <OverlayTrigger trigger='click' placement='bottom' overlay={
-            <Popover title='Generating a gesture'>
+            <Popover id='hint' title='Generating a gesture'>
               Take your mobile device, and while pressing <b>Record</b>, draw a smily mouth in the air. Do it once, since we need to send one example to our algorithm. A simple gesture shouldn't be much longer than 1-2 seconds (you can do it very slowly but you don't have to). When you are done, press <b>Send</b> and the tutorial will continue.
+            <video width='400' height='320' controls='controls'>
+              <source src='../example.mp4' type='video/mp4'/>
+              </video>
             </Popover>
             }>
             <Button bsStyle="default">How?</Button>

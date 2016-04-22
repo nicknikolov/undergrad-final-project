@@ -12,6 +12,10 @@ body {
   margin: 8px 0;
 }
 
+#hint {
+  max-width: 440px;
+}
+
 .graph {
   position: absolute;
   left: 0;
