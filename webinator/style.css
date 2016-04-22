@@ -6,6 +6,12 @@ body {
   background-color: #f9f9f9 !important;
 }
 
+.btn-mobile {
+  width:100%;
+  height: 80px;
+  margin: 8px 0;
+}
+
 .graph {
   position: absolute;
   left: 0;
@@ -22,6 +28,7 @@ path {
 .axis {
   shape-rendering: crispEdges;
 }
+
 .x.axis line {
   stroke: lightgrey;
   display: none;
@@ -41,3 +48,25 @@ path {
   fill: none;
   stroke: #000;
 }
+
+/* Animations */
+@keyframes shake {
+  0% {
+    font-size: 14px;
+    color: green;
+  }
+  50% {
+    font-size: 15px;
+  }
+  100% {
+    font-size: 14px;
+    color: blue;
+  }
+}
+
+#prediction {
+  animation-duration: .2s;
+  animation-iteration-count: 1;
+  animation-timing-function: linear;
+}
+

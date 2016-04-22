@@ -4,16 +4,27 @@ import KNN from 'ml-knn'
 import io from 'socket.io-client'
 import Model from './Model'
 import Graph from './Graph'
-import { Row, Panel, Col, ListGroup, ListGroupItem, Button, Grid, Input } from 'react-bootstrap'
+import ReactPlayer from 'react-player'
+import {
+  Form,
+  FormGroup,
+  FormControl,
+  ControlLabel,
+  Row,
+  Panel,
+  Col,
+  ListGroup,
+  ListGroupItem,
+  Button,
+  Grid,
+  OverlayTrigger,
+  Popover,
+  Input } from 'react-bootstrap'
 
 const App = React.createClass({
-  propTypes: {
-    inputs: React.PropTypes.object,
-    dispatch: React.PropTypes.func
-  },
-
   getInitialState: function () {
     return {
+      inputs: {},
       words: {},
       sessionName: 'test session',
       sessionSet: false,
@@ -24,7 +35,12 @@ const App = React.createClass({
       bulkMode: false,
       model: {},
       dataForVisualisation: [],
-      visualisedDataIndex: 0
+      visualisedDataIndex: 0,
+      isRecording: false,
+      playerPlayingIndex: -1,
+      playerVolumeUpIndex: -1,
+      playerVolumeDownIndex: -1,
+      prediction: ''
     }
   },
 
@@ -32,18 +48,24 @@ const App = React.createClass({
     this.knn = new KNN()
     this.tutorial = []
     this.socket = io()
+    this.playerPlaying = false
+    this.playerVolume = 0.8
+    this.prediction = ''
   },
 
   componentDidMount: function () {
+    this.socket.on('recording', (event) => {
+      this.setState({ isRecording: event })
+    })
+
     this.socket.on('inputs', (event) => {
-      if (this.props.inputs.length > 2) {
-        let data = { x: event[0], y: event[1], z: event[2] }
-        let arr = []
-        for (let i = 0; i < data.x.length; i++) {
-          arr.push(data.x[i])
-          arr.push(data.y[i])
-          arr.push(data.z[i])
-        }
+
+      let predictionElement = document.getElementById('prediction')
+      if (predictionElement) {
+        predictionElement.style.webkitAnimationName = ''
+        setTimeout( function () { // the timeout hack is needed in order for the animation to be retriggered
+          predictionElement.style.webkitAnimationName = 'shake'
+        }.bind(this), 5)
       }
 
       if (this.state.bulkMode) {
@@ -55,35 +77,71 @@ const App = React.createClass({
           incomingExamples: [{ x: event[0], y: event[1], z: event[2] }]
         })
       }
+
+      this.predict()
+
     })
   },
 
-  // TODO: perhaps I should get rid of redux?
+
+  predict: function () {
+      if (this.tutorial.length === 6 && this.state.incomingExamples.length > 0) {
+        let data = this.state.incomingExamples[0] // TODO: should be last of array?
+        let arr = []
+        for (let i = 0; i < data.x.length; i++) {
+          arr.push(data.x[i])
+          arr.push(data.y[i])
+          arr.push(data.z[i])
+        }
+        this.prediction = this.state.words[this.state.model.predict([arr])]
+      }
+
+      if (this.prediction === this.state.words[this.state.playerPlayingIndex]) {
+        console.log('play/stop')
+        this.playerPlaying = !this.playerPlaying
+      }
+
+      if (this.prediction === this.state.words[this.state.playerVolumeUpIndex]) {
+        console.log('volume up')
+        this.playerVolume += 0.1
+      }
+
+      if (this.prediction === this.state.words[this.state.playerVolumeDownIndex]) {
+        console.log('volume down')
+        this.playerVolume -= 0.1
+      }
+
+      this.setState({ prediction: this.prediction })
+  },
+
   assign: function (classIndex) {
     let newExamples = []
     this.state.incomingExamples.forEach((example) => {
       newExamples.push({ data: example, assignedClass: classIndex })
-      this.props.dispatch({
-        type: 'ADD_INPUT',
-        data: example,
-        assignedClass: classIndex
-      })
+      let newInputs = this.state.inputs
+      if (!newInputs[classIndex]) {
+        newInputs[classIndex] = [example]
+      } else {
+        newInputs[classIndex].push(example)
+      }
+      this.setState({ inputs: newInputs })
     })
 
-    this.train(newExamples)
+    this.train()
     if (this.tutorial.length < 6 || this.state.bulkMode) {
       this.setState({ incomingExamples: [] })
     }
+    this.predict()
   },
 
-  train: function (newExamples) {
-    if (Object.keys(this.props.inputs).length < 1) return // TODO
+  train: function () {
+    if (Object.keys(this.state.inputs).length < 1) return // TODO
 
     let cases = []
     let labels = []
 
-    Object.keys(this.props.inputs).forEach((assignedClass) => {
-      let classArray = this.props.inputs[assignedClass]
+    Object.keys(this.state.inputs).forEach((assignedClass) => {
+      let classArray = this.state.inputs[assignedClass]
       if (!classArray) return
       let classCases = []
       classArray.forEach((data) => {
@@ -97,17 +155,6 @@ const App = React.createClass({
       cases.push(...classCases)
     })
 
-    // newExamples.forEach((example, index) => {
-    //   let currentCase = []
-    //   for (let i = 0; i < example.data.x.length; i++) {
-    //     currentCase.push(example.data.x[i], example.data.y[i], example.data.z[i])
-    //   }
-    //   cases.push(currentCase)
-    //   labels.push(example.assignedClass)
-    // })
-
-    console.log('cases:' + cases.length)
-    console.log('labels:' + labels)
     this.knn.train(cases, labels, { k: 1 })
     this.setState({ model: this.knn }) // TODO: is this needed?
   },
@@ -122,6 +169,8 @@ const App = React.createClass({
         incomingExamples: [input]
       })
     }
+
+    this.predict()
   },
 
   handleSessionName: function (event) {
@@ -140,23 +189,20 @@ const App = React.createClass({
   },
 
   addClass: function () {
-    let numberOfClasses = Object.keys(this.props.inputs).length
+    let numberOfClasses = Object.keys(this.state.inputs).length
     this.assign(numberOfClasses)
   },
 
   deleteClass: function (assignedClass) {
-    this.props.dispatch({
-      type: 'DELETE_CLASS',
-      assignedClass: assignedClass
-    })
-
-    this.train([]) // TODO: mmmm... I shouldn't pass empty array probably
+    let newInputs = this.state.inputs
+    newInputs[assignedClass] = undefined // TODO: is there a better option here?
+    this.train()
     this.setState({ incomingExamples: this.state.incomingExamples })
   },
 
   setDataForVisualisation: function (assignedClass) {
     this.setState({
-      dataForVisualisation: this.props.inputs[assignedClass],
+      dataForVisualisation: this.state.inputs[assignedClass],
       visualisedDataIndex: assignedClass
     })
   },
@@ -169,12 +215,9 @@ const App = React.createClass({
   },
 
   deleteExample: function (data) {
-    this.props.dispatch({
-      type: 'DELETE_EXAMPLE',
-      data: data,
-      assignedClass: this.state.visualisedDataIndex
-    })
-    this.train([]) // TODO: mmmm... I shouldn't pass empty array probably
+    let newInputs = this.state.inputs
+    newInputs[this.state.visualisedDataIndex] = data
+    this.train()
     this.setDataForVisualisation(this.state.visualisedDataIndex)
   },
 
@@ -185,14 +228,16 @@ const App = React.createClass({
           <form className='form-inline'>
             <div className='form-group'>
               <span> Welcome, this is a new session! It exists only for you so let's give it a name: </span>
-              <Input
-                type='text'
-                value={this.state.sessionName}
-                onChange={this.handleSessionName}
-                bsStyle={this.state.sessionSet ? 'success' : 'warning'}
-              />
+              <FormGroup>
+                <FormControl
+                  type='text'
+                  value={this.state.sessionName}
+                  onChange={this.handleSessionName}
+                  bsStyle={this.state.sessionSet ? 'success' : 'warning'}
+                />
+              </FormGroup>
             </div>
-            <Button bsStyle='link' onClick={this.setSessionName}> Sounds good! </Button>
+            <Button bsStyle='link' type='submit' onClick={this.setSessionName}> Sounds good! </Button>
           </form>
         </ListGroupItem>
       )
@@ -202,6 +247,13 @@ const App = React.createClass({
       this.tutorial.push(
         <ListGroupItem key={2}>
           <span> Good. You can always change it something else above. Now, send over your first gesture... </span>
+          <OverlayTrigger trigger='click' placement='bottom' overlay={
+            <Popover title='Generating a gesture'>
+              Take your mobile device, and while pressing <b>Record</b>, draw a smily mouth in the air. Do it once, since we need to send one example to our algorithm. A simple gesture shouldn't be much longer than 1-2 seconds (you can do it very slowly but you don't have to). When you are done, press <b>Send</b> and the tutorial will continue.
+            </Popover>
+            }>
+            <Button bsStyle="default">How?</Button>
+          </OverlayTrigger>
         </ListGroupItem>
       )
     }
@@ -212,12 +264,14 @@ const App = React.createClass({
           <form className='form-inline'>
             <div className='form-group'>
               <span> Ok, why don't you name that class: </span>
-              <Input
-                type='text'
-                placeholder='e.g. Happy'
-                onChange={this.handleWord.bind(this, 0)}
-              />
-              <Button bsStyle='link' onClick={() => {
+              <FormGroup>
+                <FormControl
+                  type='text'
+                  placeholder='e.g. Happy'
+                  onChange={this.handleWord.bind(this, 0)}
+                />
+              </FormGroup>
+              <Button bsStyle='link' type='submit' onClick={() => {
                 this.setState({firstClassSet: true, numberOfClasses: 1})
                 this.assign(0)
               }}> Ok. </Button>
@@ -244,12 +298,14 @@ const App = React.createClass({
           <form className='form-inline'>
             <div className='form-group'>
               <span> What's this one called? </span>
-              <Input
-                type='text'
-                placeholder='e.g. Sad'
-                onChange={this.handleWord.bind(this, 1)}
-              />
-              <Button bsStyle='link' onClick={() => {
+              <FormGroup>
+                <FormControl
+                  type='text'
+                  placeholder='e.g. Sad'
+                  onChange={this.handleWord.bind(this, 1)}
+                />
+              </FormGroup>
+              <Button bsStyle='link' type='submit' onClick={() => {
                 this.setState({secondClassSet: true, numberOfClasses: 2})
                 this.assign(1)
               }}> Done. </Button>
@@ -271,19 +327,6 @@ const App = React.createClass({
       this.tutorial[4] = ''
     }
 
-    let prediction = ''
-    if (this.tutorial.length === 6 && this.state.incomingExamples.length > 0) {
-      let data = this.state.incomingExamples[0] // TODO: should be last of array?
-      let arr = []
-      for (let i = 0; i < data.x.length; i++) {
-        arr.push(data.x[i])
-        arr.push(data.y[i])
-        arr.push(data.z[i])
-      }
-      console.log(this.state.model.predict([arr]))
-      prediction = this.state.words[this.state.model.predict([arr])]
-    }
-
     let graph = this.state.dataForVisualisation.length > 0
       ? (<Graph
         inputs={this.state.dataForVisualisation}
@@ -291,6 +334,13 @@ const App = React.createClass({
         deleteExample={this.deleteExample}
       />)
       : ''
+
+    let videoWordsOption = []
+
+    Object.keys(this.state.words).forEach((wordIndex) => {
+      videoWordsOption.push(<option value={wordIndex} key={wordIndex}>{this.state.words[wordIndex]}</option>)
+
+    })
 
     return (
       <Grid>
@@ -305,14 +355,18 @@ const App = React.createClass({
                         <Col md={3}>
                           <b>New Example: </b>
                           <Button
+                            id='prediction'
                             bsStyle='link'
                             onClick={this.setExampleForVisualisation.bind(this, this.state.incomingExamples.map((entry) => {
                               return entry
                             }))}>
-                            {prediction}
+                            {this.state.prediction}
                           </Button>
                           {this.state.bulkMode && this.state.incomingExamples.length > 1
                             ? ' and ' + (this.state.incomingExamples.length - 1).toString() + ' more' : ''}
+                        </Col>
+                        <Col md={2}>
+                          {this.state.isRecording ? 'Recording...' : ''}
                         </Col>
                         <Col md={2}>
                           <Button bsStyle='default' onClick={this.addClass}>Add as new class</Button>
@@ -339,9 +393,54 @@ const App = React.createClass({
                       handleWord={this.handleWord}
                       deleteClass={this.deleteClass}
                       setDataForVisualisation={this.setDataForVisualisation}
-                      inputs={this.props.inputs}
+                      inputs={this.state.inputs}
                     />
                     {graph}
+                    <Panel header={(<h4>Video Player Example </h4>)}>
+                      <ListGroup>
+                        <ListGroupItem bsStyle="info">
+                          In this example, you can teach your own gestures to control this video player.
+                          Simply map the classes from the your model above to the controls.
+                        </ListGroupItem>
+                      </ListGroup>
+                      <Form inline>
+                        <FormGroup>
+                          <ControlLabel>Play/Pause</ControlLabel>
+                          <FormControl
+                            componentClass='select'
+                            placeholder='select'
+                            onChange={(event) => {
+                              this.setState({ playerPlayingIndex: event.target.value })
+                            }}>
+                            <option value='--' key={-1}>---</option>
+                            {videoWordsOption}
+                          </FormControl>
+                          <ControlLabel>Volume Up</ControlLabel>
+                          <FormControl componentClass='select'
+                            placeholder='select'
+                            onChange={(event) => {
+                              this.setState({ playerVolumeUpIndex: event.target.value })
+                            }}>
+                            <option value='--' key={-1}>---</option>
+                             {videoWordsOption}
+                          </FormControl>
+                          <ControlLabel>Volume Down</ControlLabel>
+                          <FormControl componentClass='select'
+                            placeholder='select'
+                            onChange={(event) => {
+                              this.setState({ playerVolumeDownIndex: event.target.value })
+                            }}>
+                            <option value='--' key={-1}>---</option>
+                             {videoWordsOption}
+                          </FormControl>
+                        </FormGroup>
+                      </Form>
+                      <ReactPlayer
+                        url='https://www.youtube.com/watch?v=C216ZRVOM5A'
+                        playing={this.playerPlaying}
+                        volume={this.playerVolume}
+                      />
+                    </Panel>
                   </div>
                 )
               }
@@ -352,14 +451,4 @@ const App = React.createClass({
   }
 })
 
-// export default App
-
-const mapStateToProps = (state) => {
-  return {
-    inputs: state.inputs
-  }
-}
-const AppComponent = connect(mapStateToProps, null)(App)
-
-export default AppComponent
-
+export default App

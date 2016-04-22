@@ -1,5 +1,5 @@
 import React from 'react'
-import { Button } from 'react-bootstrap'
+import { ListGroup, ListGroupItem, Button } from 'react-bootstrap'
 import io from 'socket.io-client'
 
 var Mobile = React.createClass({
@@ -25,8 +25,6 @@ var Mobile = React.createClass({
     this.touchEvent = false
     this.continuousSend = false
     this.rawData = []
-    // this.socket = io('http://' + ip.address() + ':3000')
-    // this.socket = io('127.0.0.1:3000')
     this.socket = io()
   },
 
@@ -68,15 +66,13 @@ var Mobile = React.createClass({
     this.socket.emit('browser', {'inputs': inputsArray, 'id': this.state.remoteSessionName})
   },
 
-  handleGestureStart: function () {
+  touchStart: function () {
     this.touchEvent = true
+    this.socket.emit('recording', { 'touch': true , 'id': this.state.remoteSessionName})
   },
 
-  handleContinuousStart: function () {
-    this.continuousSend = true
-  },
-
-  handleTouchEnd: function () {
+  touchEnd: function () {
+    this.socket.emit('recording', { 'touch': false , 'id': this.state.remoteSessionName})
     this.touchEvent = false
     this.continuousSend = false
   },
@@ -116,7 +112,7 @@ var Mobile = React.createClass({
     }
 
     this.rawData = []
-    this.socket.emit('browser', {'inputs': inputsArray,
+    this.socket.emit('data', {'inputs': inputsArray,
                                   'xArray': xArray,
                                   'yArray': yArray,
                                   'zArray': zArray,
@@ -130,38 +126,35 @@ var Mobile = React.createClass({
   render: function () {
     return (
       <div>
+        <ListGroup>
+          <ListGroupItem bsStyle="warning">Please lock your device in portrat mode.</ListGroupItem>
+        </ListGroup>
         <div>
           <Button
+            className='btn-mobile'
             bsSize='large'
             bsStyle='primary'
-            onTouchStart={this.handleGestureStart}
-            onTouchEnd={this.handleTouchEnd}>
-            Record Gesture
+            onTouchStart={this.touchStart}
+            onTouchEnd={this.touchEnd}>
+            Record
           </Button>
         </div>
         <div>
           <Button
+            className='btn-mobile'
             bsSize='large'
             bsStyle='primary'
             onTouchEnd={this.sendGestureData}>
-            Send Gesture
+            Send
           </Button>
         </div>
         <div>
           <Button
+            className='btn-mobile'
             bsSize='large'
             bsStyle='primary'
             onTouchEnd={this.cancelGesture}>
-            Cancel Gesture
-          </Button>
-        </div>
-        <div>
-          <Button
-            bsSize='large'
-            bsStyle='primary'
-            onTouchStart={this.handleContinuousStart}
-            onTouchEnd={this.handleTouchEnd}>
-            Send continuous data
+            Cancel
           </Button>
         </div>
         <div>

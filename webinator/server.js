@@ -9,7 +9,6 @@ const io = require('socket.io')(http)
 const remoteIp = '127.0.0.1'
 const remotePort = 6448
 
-const udpServer = dgram.createSocket('udp4')
 const users = {}
 
 app.get('/', function (req, res) {
@@ -23,8 +22,12 @@ io.on('connection', (socket) => {
     users[data] = socket.id
     console.log('session ' + data + ' set')
   })
+
+  socket.on('recording', (event) => {
+    io.to(users[event.id]).emit('recording', event.touch)
+  })
+
   socket.on('data', (event) => {
-    var data = event.inputs
     io.to(users[event.id]).emit('inputs', [event.xArray, event.yArray, event.zArray])
   })
 })
