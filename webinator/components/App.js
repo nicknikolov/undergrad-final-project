@@ -37,12 +37,14 @@ const App = React.createClass({
       dataForVisualisation: [],
       visualisedDataIndex: 0,
       isRecording: false,
-      playerPlayingIndex: -1,
-      playerVolumeUpIndex: -1,
-      playerVolumeDownIndex: -1,
+      playerPlayingIndex: -42,
+      playerVolumeUpIndex: -42,
+      playerVolumeDownIndex: -42,
       prediction: ''
     }
   },
+
+  /* Lifecycle methods */
 
   componentWillMount: function () {
     this.knn = new KNN()
@@ -59,15 +61,6 @@ const App = React.createClass({
     })
 
     this.socket.on('inputs', (event) => {
-
-      let predictionElement = document.getElementById('prediction')
-      if (predictionElement) {
-        predictionElement.style.webkitAnimationName = ''
-        setTimeout( function () { // the timeout hack is needed in order for the animation to be retriggered
-          predictionElement.style.webkitAnimationName = 'shake'
-        }.bind(this), 5)
-      }
-
       if (this.state.bulkMode) {
         this.setState({
           incomingExamples: [...this.state.incomingExamples, { x: event[0], y: event[1], z: event[2] }]
@@ -77,41 +70,57 @@ const App = React.createClass({
           incomingExamples: [{ x: event[0], y: event[1], z: event[2] }]
         })
       }
-
-      this.predict()
-
     })
   },
 
+  /*********************/
+
+  handleSessionName: function (event) {
+    this.setState({ sessionName: event.target.value })
+  },
+
+  setSessionName: function () {
+    this.setState({ sessionSet: true })
+    this.socket.emit('id', this.state.sessionName)
+  },
 
   predict: function () {
-      if (this.tutorial.length === 6 && this.state.incomingExamples.length > 0) {
-        let data = this.state.incomingExamples[0] // TODO: should be last of array?
-        let arr = []
-        for (let i = 0; i < data.x.length; i++) {
-          arr.push(data.x[i])
-          arr.push(data.y[i])
-          arr.push(data.z[i])
-        }
-        this.prediction = this.state.words[this.state.model.predict([arr])]
+    if (this.tutorial.length === 6 && this.state.incomingExamples.length > 0) {
+      let data = this.state.incomingExamples[0] // TODO: should be last of array?
+      let arr = []
+      for (let i = 0; i < data.x.length; i++) {
+        arr.push(data.x[i])
+        arr.push(data.y[i])
+        arr.push(data.z[i])
       }
-
-      if (this.prediction === this.state.words[this.state.playerPlayingIndex]) {
-        console.log('play/stop')
-        this.playerPlaying = !this.playerPlaying
+      this.prediction = this.state.words[this.state.model.predict([arr])]
+      let predictionElement = document.getElementById('prediction')
+      if (predictionElement) {
+        predictionElement.style.webkitAnimationName = ''
+        setTimeout( function () { // the timeout hack is needed in order for the animation to be retriggered
+          predictionElement.style.webkitAnimationName = 'shake'
+        }.bind(this), 5)
       }
+    } else {
+      this.prediction = '(empty)'
+    }
 
-      if (this.prediction === this.state.words[this.state.playerVolumeUpIndex]) {
-        console.log('volume up')
-        this.playerVolume += 0.1
-      }
+    if (this.prediction === this.state.words[this.state.playerPlayingIndex]) {
+      console.log('play/stop')
+      this.playerPlaying = !this.playerPlaying
+    }
 
-      if (this.prediction === this.state.words[this.state.playerVolumeDownIndex]) {
-        console.log('volume down')
-        this.playerVolume -= 0.1
-      }
+    if (this.prediction === this.state.words[this.state.playerVolumeUpIndex]) {
+      console.log('volume up')
+      this.playerVolume += 0.1
+    }
 
-      this.setState({ prediction: this.prediction })
+    if (this.prediction === this.state.words[this.state.playerVolumeDownIndex]) {
+      console.log('volume down')
+      this.playerVolume -= 0.1
+    }
+
+    this.socket.emit('prediction', { 'prediction': this.prediction })
   },
 
   assign: function (classIndex) {
@@ -131,7 +140,6 @@ const App = React.createClass({
     if (this.tutorial.length < 6 || this.state.bulkMode) {
       this.setState({ incomingExamples: [] })
     }
-    this.predict()
   },
 
   train: function () {
@@ -169,17 +177,6 @@ const App = React.createClass({
         incomingExamples: [input]
       })
     }
-
-    this.predict()
-  },
-
-  handleSessionName: function (event) {
-    this.setState({ sessionName: event.target.value })
-  },
-
-  setSessionName: function () {
-    this.setState({ sessionSet: true })
-    this.socket.emit('id', this.state.sessionName)
   },
 
   handleWord: function (assignedClass, event) {
@@ -342,8 +339,9 @@ const App = React.createClass({
 
     Object.keys(this.state.words).forEach((wordIndex) => {
       videoWordsOption.push(<option value={wordIndex} key={wordIndex}>{this.state.words[wordIndex]}</option>)
-
     })
+
+    this.predict()
 
     return (
       <Grid>
@@ -363,7 +361,7 @@ const App = React.createClass({
                             onClick={this.setExampleForVisualisation.bind(this, this.state.incomingExamples.map((entry) => {
                               return entry
                             }))}>
-                            {this.state.prediction}
+                            {this.prediction}
                           </Button>
                           {this.state.bulkMode && this.state.incomingExamples.length > 1
                             ? ' and ' + (this.state.incomingExamples.length - 1).toString() + ' more' : ''}
@@ -390,7 +388,6 @@ const App = React.createClass({
                     <Model
                       numberOfClasses={this.state.numberOfClasses}
                       words={this.state.words}
-                      addClass={this.addClass}
                       assign={this.assign}
                       incomingExamples={this.state.incomingExamples}
                       handleWord={this.handleWord}
