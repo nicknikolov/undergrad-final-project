@@ -6,7 +6,6 @@ var Model = React.createClass({
     inputs: React.PropTypes.object,
     words: React.PropTypes.object,
     incomingExamples: React.PropTypes.array,
-    addClass: React.PropTypes.func,
     assign: React.PropTypes.func,
     handleWord: React.PropTypes.func,
     deleteClass: React.PropTypes.func,
@@ -26,10 +25,6 @@ var Model = React.createClass({
 
   assign: function (classIndex) {
     this.props.assign(classIndex)
-  },
-
-  addClass: function () {
-    this.props.addClass()
   },
 
   deleteClass: function (assignedClass) {
@@ -57,8 +52,8 @@ var Model = React.createClass({
               value={word}
               onChange={this.handleWord.bind(this, currentClass)}
             />
-            <Button bsStyle='link' 
-              disabled={disableAssign} 
+            <Button bsStyle='link'
+              disabled={disableAssign}
               onClick={this.assign.bind(this, currentClass)}>
               Assign
             </Button>
@@ -75,7 +70,7 @@ var Model = React.createClass({
           </Col>
         </Row>
       )
-    }) 
+    })
     return (
       <Panel header={(<h4>Model </h4>)}>
         <Row>
