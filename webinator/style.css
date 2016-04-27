@@ -12,6 +12,10 @@ body {
   margin: 8px 0;
 }
 
+.btn-mobile:active {
+  background-color: yellow !important;
+}
+
 #hint {
   max-width: 440px;
 }
