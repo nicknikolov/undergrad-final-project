@@ -1,10 +1,10 @@
 import React from 'react'
-import { connect } from 'react-redux'
 import KNN from 'ml-knn'
 import io from 'socket.io-client'
 import Model from './Model'
 import Graph from './Graph'
-import ReactPlayer from 'react-player'
+import VideoPlayer from './VideoPlayer'
+import Dashboard from './Dashboard'
 import {
   Form,
   FormGroup,
@@ -73,6 +73,10 @@ const App = React.createClass({
     })
   },
 
+  componentWillUpdate: function (props, state) {
+    this.newExample = JSON.stringify(this.state.incomingExamples[0]) !== JSON.stringify(state.incomingExamples[0])
+  },
+
   /*********************/
 
   handleSessionName: function (event) {
@@ -82,6 +86,7 @@ const App = React.createClass({
   setSessionName: function () {
     this.setState({ sessionSet: true })
     this.socket.emit('id', this.state.sessionName)
+
   },
 
   predict: function () {
@@ -105,18 +110,17 @@ const App = React.createClass({
       this.prediction = '(empty)'
     }
 
+    if (!this.newExample) return
+
     if (this.prediction === this.state.words[this.state.playerPlayingIndex]) {
-      console.log('play/stop')
       this.playerPlaying = !this.playerPlaying
     }
 
     if (this.prediction === this.state.words[this.state.playerVolumeUpIndex]) {
-      console.log('volume up')
       this.playerVolume += 0.1
     }
 
     if (this.prediction === this.state.words[this.state.playerVolumeDownIndex]) {
-      console.log('volume down')
       this.playerVolume -= 0.1
     }
 
@@ -205,8 +209,11 @@ const App = React.createClass({
   },
 
   setExampleForVisualisation: function (data) {
+    // let data = this.state.incomingExamples.map((entry) => {
+    //   return entry
+    // })
     this.setState({
-      dataForVisualisation: data,
+      dataForVisualisation: this.state.incomingExamples,
       visualisedDataIndex: -1
     })
   },
@@ -218,9 +225,30 @@ const App = React.createClass({
     this.setDataForVisualisation(this.state.visualisedDataIndex)
   },
 
+  setPlayerPlayingIndex: function (index) {
+    console.log(index + ' assigned')
+    this.setState({ playerPlayingIndex: index })
+  },
+
+  setPlayerVolumeUpIndex: function (index) {
+    this.setState({ playerVolumeUpIndex: index })
+  },
+
+  setPlayerVolumeDownIndex: function (index) {
+    this.setState({ playerVolumeDownIndex: index })
+  },
+
+  flipBulkMode: function () {
+    this.setState({ bulkMode: !this.state.bulkMode })
+  },
+
+  clearIncomingExamples: function () {
+    this.setState({ incomingExamples: [] })
+  },
+
   render: function () {
-    if (this.tutorial.length === 0) {
-      this.tutorial.push(
+    // if (this.tutorial.length === 0) {
+      this.tutorial[0] = (
         <ListGroupItem key={1}>
           <form className='form-inline'>
             <div className='form-group'>
@@ -238,7 +266,7 @@ const App = React.createClass({
           </form>
         </ListGroupItem>
       )
-    }
+    // }
 
     if (this.tutorial.length === 1 && this.state.sessionSet) {
       this.tutorial.push(
@@ -335,10 +363,10 @@ const App = React.createClass({
       />)
       : ''
 
-    let videoWordsOption = []
+    let videoWordsOptions = []
 
     Object.keys(this.state.words).forEach((wordIndex) => {
-      videoWordsOption.push(<option value={wordIndex} key={wordIndex}>{this.state.words[wordIndex]}</option>)
+      videoWordsOptions.push(<option value={wordIndex} key={wordIndex}>{this.state.words[wordIndex]}</option>)
     })
 
     this.predict()
@@ -351,40 +379,16 @@ const App = React.createClass({
               if (this.tutorial.length === 6) {
                 return (
                   <div>
-                    <Panel header={(<h4>Dashboard </h4>)}>
-                      <Row>
-                        <Col md={3}>
-                          <b>New Example: </b>
-                          <Button
-                            id='prediction'
-                            bsStyle='link'
-                            onClick={this.setExampleForVisualisation.bind(this, this.state.incomingExamples.map((entry) => {
-                              return entry
-                            }))}>
-                            {this.prediction}
-                          </Button>
-                          {this.state.bulkMode && this.state.incomingExamples.length > 1
-                            ? ' and ' + (this.state.incomingExamples.length - 1).toString() + ' more' : ''}
-                        </Col>
-                        <Col md={2}>
-                          {this.state.isRecording ? 'Recording...' : ''}
-                        </Col>
-                        <Col md={2}>
-                          <Button bsStyle='default' onClick={this.addClass}>Add as new class</Button>
-                        </Col>
-                        <Col md={1}>
-                          <Button bsStyle='danger' onClick={() => { this.setState({ incomingExamples: [] }) }}>
-                            Clear
-                          </Button>
-                        </Col>
-                        <Col md={2}>
-                          <b>Bulk mode: </b>
-                          <Button bsStyle='default' onClick={() => { this.setState({ bulkMode: !this.state.bulkMode }) }}>
-                            {this.state.bulkMode ? 'on' : 'off'}
-                          </Button>
-                        </Col>
-                      </Row>
-                    </Panel>
+                    <Dashboard
+                      prediction={this.prediction}
+                      flipBulkMode={this.flipBulkMode}
+                      bulkMode={this.state.bulkMode}
+                      isRecording={this.state.isRecording}
+                      addClass={this.addClass}
+                      setExampleForVisualisation={this.setExampleForVisualisation}
+                      incomingExamples={this.state.incomingExamples}
+                      clearIncomingExamples={this.clearIncomingExamples}
+                    />
                     <Model
                       numberOfClasses={this.state.numberOfClasses}
                       words={this.state.words}
@@ -396,51 +400,14 @@ const App = React.createClass({
                       inputs={this.state.inputs}
                     />
                     {graph}
-                    <Panel header={(<h4>Video Player Example </h4>)}>
-                      <ListGroup>
-                        <ListGroupItem bsStyle="info">
-                          In this example, you can teach your own gestures to control this video player.
-                          Simply map the classes from the your model above to the controls.
-                        </ListGroupItem>
-                      </ListGroup>
-                      <Form inline>
-                        <FormGroup>
-                          <ControlLabel>Play/Pause</ControlLabel>
-                          <FormControl
-                            componentClass='select'
-                            placeholder='select'
-                            onChange={(event) => {
-                              this.setState({ playerPlayingIndex: event.target.value })
-                            }}>
-                            <option value='--' key={-1}>---</option>
-                            {videoWordsOption}
-                          </FormControl>
-                          <ControlLabel>Volume Up</ControlLabel>
-                          <FormControl componentClass='select'
-                            placeholder='select'
-                            onChange={(event) => {
-                              this.setState({ playerVolumeUpIndex: event.target.value })
-                            }}>
-                            <option value='--' key={-1}>---</option>
-                             {videoWordsOption}
-                          </FormControl>
-                          <ControlLabel>Volume Down</ControlLabel>
-                          <FormControl componentClass='select'
-                            placeholder='select'
-                            onChange={(event) => {
-                              this.setState({ playerVolumeDownIndex: event.target.value })
-                            }}>
-                            <option value='--' key={-1}>---</option>
-                             {videoWordsOption}
-                          </FormControl>
-                        </FormGroup>
-                      </Form>
-                      <ReactPlayer
-                        url='https://www.youtube.com/watch?v=C216ZRVOM5A'
-                        playing={this.playerPlaying}
-                        volume={this.playerVolume}
-                      />
-                    </Panel>
+                    <VideoPlayer
+                      playerPlaying={this.playerPlaying}
+                      playerVolume={this.playerVolume}
+                      videoWordsOptions={videoWordsOptions}
+                      setPlayerPlayingIndex={this.setPlayerPlayingIndex}
+                      setPlayerVolumeUpIndex={this.setPlayerVolumeUpIndex}
+                      setPlayerVolumeDownIndex={this.setPlayerVolumeDownIndex}
+                    />
                   </div>
                 )
               }

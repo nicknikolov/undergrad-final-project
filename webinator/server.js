@@ -59,7 +59,6 @@ io.on('connection', (socket) => {
       console.log('message sent')
       udpServer.send(oscMsg, 0, oscMsg.length, remotePort, remoteIp)
     }
-
   })
 })
 

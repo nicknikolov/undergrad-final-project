@@ -7,7 +7,8 @@ var Mobile = React.createClass({
   getInitialState: function () {
     return {
       acceleration: {x: 0, y: 0, z: 0},
-      remoteSessionName: 'test session'
+      remoteSessionName: 'test session',
+      shortGesture: false
     }
   },
 
@@ -79,6 +80,7 @@ var Mobile = React.createClass({
 
   cancelGesture: function () {
     this.rawData = []
+    this.setState({ shortGesture: false })
   },
 
   sendGestureData: function () {
@@ -90,8 +92,11 @@ var Mobile = React.createClass({
     // Ignore for now, later maybe interpolation
     if ((rawData.length * 3) < inputsNumber) {
       this.rawData = []
+      this.setState({ shortGesture: true })
       return
     }
+
+    this.setState({ shortGesture: false })
 
     // Downsample by sampling every N sample using the downsampleFactor variable
     var downsampleFactor = (rawData.length * 3) / inputsNumber
@@ -124,10 +129,19 @@ var Mobile = React.createClass({
   },
 
   render: function () {
+    let gestureWarning = ''
+    if (this.state.shortGesture) {
+      gestureWarning = (
+        <ListGroup>
+          <ListGroupItem bsStyle="danger">Your gesture was too short, trying holding a bit longer.</ListGroupItem>
+        </ListGroup>
+      )
+    }
+
     return (
       <div>
         <ListGroup>
-          <ListGroupItem bsStyle="warning">Please lock your device in portrat mode.</ListGroupItem>
+          <ListGroupItem bsStyle="warning">Please lock your device in portrait mode.</ListGroupItem>
         </ListGroup>
         <div>
           <Button
@@ -166,11 +180,7 @@ var Mobile = React.createClass({
             onChange={this.handleRemoteSessionName}
           />
         </div>
-        <div>
-          {this.touchEvent ? <div> {this.state.acceleration.x} </div> : null}
-          {this.touchEvent ? <div> {this.state.acceleration.y} </div> : null}
-          {this.touchEvent ? <div> {this.state.acceleration.z} </div> : null}
-        </div>
+        {gestureWarning}
       </div>
     )
   }
